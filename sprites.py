@@ -15,10 +15,11 @@ HEIGHT = funtions.screen_size()[1]
 #---------------------------------------------------------------------------------------------------------------------
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, imagen, area, hp, luck):
+    def __init__(self, imagen, area, hp, luck, atack):
         super().__init__()
         self._hp = hp
         self._luck = luck
+        self._attack = attack
 
         self.image = funtions.load_image(imagen, area[0], area[1], True)
         self.rect = self.image.get_rect()
@@ -40,6 +41,14 @@ class Player(pygame.sprite.Sprite):
     @luck.setter
     def luck(self, luck):
         self._luck = luck
+    
+    @property
+    def atack(self):
+        return self._atack
+
+    @hp.setter
+    def attack(self, attack):
+        self._attack = attack
     
     def update(self):
         if self.rect.top > HEIGHT-80:
