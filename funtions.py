@@ -1,4 +1,4 @@
-import subprocess, pygame, platform, ctypes
+import subprocess, pygame, platform, ctypes, Sprites, random
 from pygame.locals import *
 
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
@@ -66,5 +66,8 @@ def move(keys, sprite):  #Permite el movimiento del personaje principal
             sprite.rect.x += 5
         elif keys[K_LEFT]:
             sprite.rect.x -= 5
-
+            
+def cal_de_dañ(player, enemy):
+        player._attack = random.randint(100, 600)*(1/player._luck)
+        enemy._hp = enemy._hp-player._attack
 #def collide()
