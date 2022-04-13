@@ -1,10 +1,11 @@
-import subprocess, pygame, platform, ctypes, sys
+import subprocess, pygame, platform, ctypes, sys, random
 import sprites
 from pygame.locals import *
 
 
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
 
+diccionario={'20 – 7x = 6x – 6':'2', '7x + 2 = 10x + 5':'-1','6x − 5 = 8x + 2': '– 7 /2' , '4x + 4 + 9x + 18 = 12 (x+2)':'2', '2 - x = x - 8':'5', '2x - 1 = 5x + 8':'-3-', '5x - 10 = 10': '4', '4y - 5 = 3y + 1': '6', '2(2x - 3) = 2x - 10':'-2', '3x - 4 = 3(2x - 2) - 7':'3', '2(t + 2) - 5 = 5(t - 4) + 13':'2'}
 
 def screen_size(): # Obtine la resolución de la pantalla dependiendo del sistema operativo
     if sistema == 'Linux':
@@ -73,6 +74,10 @@ def move(keys, sprite, speed:int):  #Permite el movimiento del personaje princip
             sprite.rect.x += speed
         elif keys[K_LEFT]:
             sprite.rect.x -= speed
+
+def damange(player, enemy):
+        player._attack = random.randint(100, 600)*(1/player._luck)
+        enemy._hp = enemy._hp-player._attack
 
 def battle(player, enemy, screen, clock, FPS, WIDTH, HEIGHT):
 
