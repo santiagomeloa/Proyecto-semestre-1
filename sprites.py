@@ -15,7 +15,7 @@ HEIGHT = funtions.screen_size()[1]
 #---------------------------------------------------------------------------------------------------------------------
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, imagen, area, hp, luck, atack):
+    def __init__(self, imagen, area, hp, luck, attack):
         super().__init__()
         self._hp = hp
         self._luck = luck

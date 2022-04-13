@@ -15,7 +15,7 @@ def main():
     all_sprites_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
 
-    player1 = sprites.Player('images/main_character.png', (100, 100), 3, 100)
+    player1 = sprites.Player('images/main_character.png', (100, 100), 3, 100, 100)
 
 
 
