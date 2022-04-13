@@ -1,29 +1,24 @@
-import pygame, random
+import pygame, random, time, asyncio
 import funtions
 
 color = (12,31,124)
 
-#-------Tamaño de la pantalla------
 
-WIDTH = funtions.screen_size()[0]
-HEIGHT = funtions.screen_size()[1]
-#WIDTH = 1200
-#HEIGHT = 675
 
 #---------------------------------------------------------------------------------------------------------------------
 #-------------------------------------Defina aquí todos los sprites del juego-----------------------------------------
 #---------------------------------------------------------------------------------------------------------------------
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, imagen, area, hp, luck):
+    def __init__(self, imagen, location, area, hp, luck):
         super().__init__()
         self._hp = hp
         self._luck = luck
 
         self.image = funtions.load_image(imagen, area[0], area[1], True)
         self.rect = self.image.get_rect()
-        self.rect.centerx = WIDTH / 2
-        self.rect.centery = HEIGHT / 2
+        self.rect.centerx = location[0]
+        self.rect.centery = location[1]
     
     @property
     def hp(self):
@@ -42,14 +37,14 @@ class Player(pygame.sprite.Sprite):
         self._luck = luck
     
     def update(self):
-        if self.rect.top > HEIGHT-80:
-            self.rect.top = HEIGHT-80
+        if self.rect.top > funtions.HEIGHT-80:
+            self.rect.top = funtions.HEIGHT-80
 
         elif self.rect.bottom < 0+80:
             self.rect.bottom = 0+80
 
-        elif self.rect.right > WIDTH+5:
-            self.rect.right = WIDTH+5
+        elif self.rect.right > funtions.WIDTH+5:
+            self.rect.right = funtions.WIDTH+5
 
         elif self.rect.left < 0-20:
             self.rect.left = 0-20
@@ -66,8 +61,8 @@ class Bicho(pygame.sprite.Sprite):
 
         self.image = funtions.load_image(imagen, area[0], area[1], True)
         self.rect = self.image.get_rect()
-        self.rect.centerx = random.randint(0, WIDTH)
-        self.rect.centery = random.randint(0, HEIGHT)
+        self.rect.centerx = random.randint(0, funtions.WIDTH)
+        self.rect.centery = random.randint(0, funtions.HEIGHT)
     
     @property
     def hp(self):
@@ -79,25 +74,46 @@ class Bicho(pygame.sprite.Sprite):
 
 
     def update(self):
-        self.rect.y += 2
-        self.rect.x += 2
-        if self.rect.top > HEIGHT:
-            #self.rect.top = random.randint(0, HEIGHT)
-            self.rect.centerx = random.randint(0, WIDTH)
-            self.rect.centery = random.randint(0, HEIGHT)
-        elif self.rect.bottom < 0:
-            self.rect.centerx = random.randint(0, WIDTH)
-            self.rect.centery = random.randint(0, HEIGHT)
-            #self.rect.top = random.randint(0, HEIGHT)
-        elif self.rect.left < 0:
-            self.rect.centerx = random.randint(0, WIDTH)
-            self.rect.centery = random.randint(0, HEIGHT)
-            #self.rect.left = random.randint(0, WIDTH)
-        elif self.rect.right > WIDTH:
-            self.rect.centerx = random.randint(0, WIDTH)
-            self.rect.centery = random.randint(0, HEIGHT)
-            #self.rect.right = random.randint(0, WIDTH)
+        x = random.choice(['x', 'y'])
+        print(x)
+
+        if x == 'x':
+            for n in range(10):
+                self.rect.centerx += 2
+        else:
+            for n in range(10):
+                self.rect.centery += 2
+                
+        if self.rect.top < 0:
+            #self.rect.centerx = random.randint(0, funtions.WIDTH)
+            self.rect.bottom = funtions.HEIGHT
+
+        elif self.rect.bottom > funtions.HEIGHT:
+            #self.rect.centerx = random.randint(0, funtions.WIDTH)
+            self.rect.top = 0
+
+        elif self.rect.left <= 0:
+            self.rect.right = funtions.WIDTH
+            #self.rect.centery = random.randint(0, funtions.HEIGHT)
+
+        elif self.rect.right > funtions.WIDTH:
+            self.rect.left = 0
+            #self.rect.centery = random.randint(0, funtions.HEIGHT)
 
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+class Hand(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = funtions.load_image('Images/hand.jpg', 60, 60, True)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = 200
+        self.rect.centery = 500
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+
+

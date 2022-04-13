@@ -1,5 +1,7 @@
-import subprocess, pygame, platform, ctypes
+import subprocess, pygame, platform, ctypes, sys
+import sprites
 from pygame.locals import *
+
 
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
 
@@ -21,6 +23,12 @@ def screen_size(): # Obtine la resolución de la pantalla dependiendo del sistem
         WIDTH, HEIGHT = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
         return WIDTH, HEIGHT
 
+#-------Tamaño de la pantalla------
+
+WIDTH = screen_size()[0]
+HEIGHT = screen_size()[1]
+#WIDTH = 1200
+#HEIGHT = 675
 
 def load_image(filename, width=None, height=None, transparent=False): #covierte las imagenes, les da las dimenciones deceadas y les quita el fondo
     try: imagen = pygame.image.load(filename)
@@ -32,39 +40,69 @@ def load_image(filename, width=None, height=None, transparent=False): #covierte 
 
     imagen = imagen.convert()
     if transparent:
-        #color = image.get_at((0, 0))
         color = pygame.PixelArray(imagen)
         imagen.set_colorkey(color[0, 0], RLEACCEL)
     return imagen
 
 
-def move(keys, sprite):  #Permite el movimiento del personaje principal
+def move(keys, sprite, speed:int):  #Permite el movimiento del personaje principal
     if keys[K_LEFT]:
-        sprite.rect.x -= 5
+        sprite.rect.x -= speed
         if keys[K_UP]:
-            sprite.rect.y -= 5
+            sprite.rect.y -= speed
         elif keys[K_DOWN]:
-            sprite.rect.y += 5
+            sprite.rect.y += speed
 
     elif keys[K_RIGHT]:
-        sprite.rect.x += 5
+        sprite.rect.x += speed
         if keys[K_UP]:
-            sprite.rect.y -= 5
+            sprite.rect.y -= speed
         elif keys[K_DOWN]:
-            sprite.rect.y += 5
+            sprite.rect.y += speed
         
     elif keys[K_UP]:
-        sprite.rect.y -= 5
+        sprite.rect.y -= speed
         if keys[K_RIGHT]:
-            sprite.rect.x += 5
+            sprite.rect.x += speed
         elif keys[K_LEFT]:
-            sprite.rect.x -= 5
+            sprite.rect.x -= speed
 
     elif keys[K_DOWN]:
-        sprite.rect.y += 5
+        sprite.rect.y += speed
         if keys[K_RIGHT]:
-            sprite.rect.x += 5
+            sprite.rect.x += speed
         elif keys[K_LEFT]:
-            sprite.rect.x -= 5
+            sprite.rect.x -= speed
 
-#def collide()
+def battle(player, enemy, screen, clock, FPS, WIDTH, HEIGHT):
+
+    FPS = 20
+    
+    all_sprites_group = pygame.sprite.Group()
+
+    background_image = load_image('Images/battle_stage.jpg', WIDTH, HEIGHT)
+    player1 = sprites.Player('Images/main_character.png', (WIDTH/6, HEIGHT/3), (500, 500), 3, 100)
+    hand = sprites.Hand()
+    enemy = sprites.Bicho('Images/enemy.png', (50,50), 20, 10)
+
+    all_sprites_group.add(player1, hand, enemy)
+
+    while True:
+        clock.tick(FPS)
+        keys = pygame.key.get_pressed()
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit(0)
+        
+        screen.blit(background_image, (0, 0))
+        move(keys, hand, 100)
+        
+
+        
+        all_sprites_group.draw(screen)
+
+        hand.update()
+
+        pygame.display.flip() #Actualizar contenido en pantalla
+    

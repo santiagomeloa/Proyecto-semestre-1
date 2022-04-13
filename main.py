@@ -1,26 +1,30 @@
 import pygame
-import sys, os
+import sys, time
 from pygame.locals import *
-import funtions, sprites
+import funtions
+import sprites
+
+#-------Tamaño de la pantalla------
 
 
 FPS = 60
 
 def main():
-    screen = pygame.display.set_mode((sprites.WIDTH, sprites.HEIGHT))
+    screen = pygame.display.set_mode((funtions.WIDTH, funtions.HEIGHT))
     clock = pygame.time.Clock()
-    pygame.display.set_caption('Prueba de juego')
-    background_image = funtions.load_image('images/wallBackground.jpg', sprites.WIDTH, sprites.HEIGHT)
+    pygame.display.set_caption('Bad dice')
+
+    background_image = funtions.load_image('Images/wallBackground.jpg', funtions.WIDTH, funtions.HEIGHT)
 
     all_sprites_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
 
-    player1 = sprites.Player('images/main_character.png', (100, 100), 3, 100)
-
+    player1 = sprites.Player('Images/main_character.png', (200, 500), (100, 100), 3, 100)
+    all_sprites_group.add(player1)
 
 
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('images/enemy.png', (50,50), 20, 10)
+        enemy = sprites.Bicho('Images/enemy.png', (50,50), 20, 10)
         enemy_group.add(enemy)
 
 
@@ -33,18 +37,18 @@ def main():
                 sys.exit(0)
         
         screen.blit(background_image, (0, 0))
-        funtions.move(keys, player1)
-        player1.update()
+        funtions.move(keys, player1, 5)
+        all_sprites_group.update()
         enemy_group.update()
 
         
         collide = pygame.sprite.spritecollide(player1, enemy_group, False)
         if collide:
-            player1.hp -= 1
-            if player1.hp < 0:
-                player1.kill()
+            time.sleep(2)
+            funtions.battle(player1, enemy, screen, clock, FPS, funtions.WIDTH, funtions.HEIGHT)
+            
         
-        player1.draw(screen)
+        all_sprites_group.draw(screen)
 
         enemy_group.draw(screen)
 
