@@ -75,7 +75,6 @@ class Bicho(pygame.sprite.Sprite):
 
     def update(self):
         x = random.choice(['x', 'y'])
-        print(x)
 
         if x == 'x':
             for n in range(10):
@@ -85,20 +84,20 @@ class Bicho(pygame.sprite.Sprite):
                 self.rect.centery += 2
                 
         if self.rect.top < 0:
-            #self.rect.centerx = random.randint(0, funtions.WIDTH)
+           
             self.rect.bottom = funtions.HEIGHT
 
         elif self.rect.bottom > funtions.HEIGHT:
-            #self.rect.centerx = random.randint(0, funtions.WIDTH)
+           
             self.rect.top = 0
 
         elif self.rect.left <= 0:
             self.rect.right = funtions.WIDTH
-            #self.rect.centery = random.randint(0, funtions.HEIGHT)
+          
 
         elif self.rect.right > funtions.WIDTH:
             self.rect.left = 0
-            #self.rect.centery = random.randint(0, funtions.HEIGHT)
+         
 
 
     def draw(self, surface):

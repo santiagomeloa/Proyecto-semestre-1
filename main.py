@@ -7,7 +7,7 @@ import sprites
 #-------Tamaño de la pantalla------
 
 
-FPS = 60
+FPS = 120
 
 def main():
     screen = pygame.display.set_mode((funtions.WIDTH, funtions.HEIGHT))
@@ -43,9 +43,9 @@ def main():
 
         
         collide = pygame.sprite.spritecollide(player1, enemy_group, False)
-        if collide:
-            time.sleep(2)
-            funtions.battle(player1, enemy, screen, clock, FPS, funtions.WIDTH, funtions.HEIGHT)
+        #if collide:
+        #    time.sleep(2)
+        #    funtions.battle(player1, enemy, screen, clock, FPS, funtions.WIDTH, funtions.HEIGHT)
             
         
         all_sprites_group.draw(screen)
