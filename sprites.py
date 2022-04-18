@@ -1,5 +1,5 @@
 import pygame, random, time, asyncio
-import funtions
+import functions
 
 color = (12,31,124)
 
@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         self._hp = hp
         self._luck = luck
 
-        self.image = funtions.load_image(imagen, area[0], area[1], True)
+        self.image = functions.load_image(imagen, area[0], area[1], True)
         self.rect = self.image.get_rect()
         self.rect.centerx = location[0]
         self.rect.centery = location[1]
@@ -37,14 +37,14 @@ class Player(pygame.sprite.Sprite):
         self._luck = luck
     
     def update(self):
-        if self.rect.top > funtions.HEIGHT-80:
-            self.rect.top = funtions.HEIGHT-80
+        if self.rect.top > functions.HEIGHT-80:
+            self.rect.top = functions.HEIGHT-80
 
         elif self.rect.bottom < 0+80:
             self.rect.bottom = 0+80
 
-        elif self.rect.right > funtions.WIDTH+5:
-            self.rect.right = funtions.WIDTH+5
+        elif self.rect.right > functions.WIDTH+5:
+            self.rect.right = functions.WIDTH+5
 
         elif self.rect.left < 0-20:
             self.rect.left = 0-20
@@ -59,10 +59,10 @@ class Bicho(pygame.sprite.Sprite):
         self._hp = hp
         self._damage = damage
 
-        self.image = funtions.load_image(imagen, area[0], area[1], True)
+        self.image = functions.load_image(imagen, area[0], area[1], True)
         self.rect = self.image.get_rect()
-        self.rect.centerx = random.randint(0, funtions.WIDTH)
-        self.rect.centery = random.randint(0, funtions.HEIGHT)
+        self.rect.centerx = random.randint(0, functions.WIDTH)
+        self.rect.centery = random.randint(0, functions.HEIGHT)
     
     @property
     def hp(self):
@@ -84,18 +84,15 @@ class Bicho(pygame.sprite.Sprite):
                 self.rect.centery += 2
                 
         if self.rect.top < 0:
-           
-            self.rect.bottom = funtions.HEIGHT
+            self.rect.bottom = functions.HEIGHT
 
-        elif self.rect.bottom > funtions.HEIGHT:
-           
+        elif self.rect.bottom > functions.HEIGHT:
             self.rect.top = 0
 
         elif self.rect.left <= 0:
-            self.rect.right = funtions.WIDTH
-          
-
-        elif self.rect.right > funtions.WIDTH:
+            self.rect.right = functions.WIDTH
+        
+        elif self.rect.right > functions.WIDTH:
             self.rect.left = 0
          
 
@@ -106,13 +103,87 @@ class Bicho(pygame.sprite.Sprite):
 class Hand(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = funtions.load_image('Images/hand.jpg', 60, 60, True)
+        self.image = functions.load_image('Images/hand.jpg', 60, 60, True)
         self.rect = self.image.get_rect()
-        self.rect.centerx = 200
-        self.rect.centery = 500
+        self.rect.centerx = (functions.WIDTH/4)-180
+        self.rect.centery = functions.HEIGHT-(functions.HEIGHT/4)
+
+    def update(self):
+        if self.rect.top < 0:
+            self.rect.bottom = functions.HEIGHT
+
+        elif self.rect.bottom > functions.HEIGHT:
+            self.rect.top = 0
+
+        elif self.rect.left <= 0:
+            self.rect.right = (functions.WIDTH-functions.WIDTH/4)-180
+        
+        elif self.rect.right > functions.WIDTH:
+            self.rect.left = (functions.WIDTH/4)-180
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
 
+class Words(pygame.sprite.Sprite, pygame.font.Font):
+    def __init__(self, text: str, size: int, color, location, multicolor=False):
+        super().__init__()
 
+        self.fond = pygame.font.Font(None, size)
+        self._text = text
+        self._color = color
+        self.multicolor = multicolor
+        self.image = self.fond.render(text, 1, self.color)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = location[0]
+        self.rect.centery = location[1]
+
+    #--------setters and getters---------
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text):
+        self._text = text
+
+    @property
+    def color(self):
+        return self._color
+    
+    @color.setter
+    def color(self, color):
+        self._color = color
+
+
+
+    def update(self):
+        x = random.randint(0, len(functions.list_colors)-1)
+
+        if self.multicolor:
+            self.color = functions.list_colors[x]
+        self.image = self.fond.render(self.text, 1 , self.color)
+        return self.image
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+class Buttons(pygame.sprite.Sprite):
+    def __init__(self, type_button, position: tuple):
+        super().__init__()
+        self.sheet = functions.load_image('Images/Botones de control 1.png', 300, 300, True)
+        if type_button == 'attack':
+            self.sheet.set_clip(pygame.Rect(8, 6, 330, 80))
+        elif type_button == 'spell':
+            self.sheet.set_clip(pygame.Rect(10, 108, 235, 88))
+        elif type_button == 'luck':
+            self.sheet.set_clip(pygame.Rect(9, 202, 220, 90))
+        self.image = self.sheet.subsurface(self.sheet.get_clip())
+
+
+        self.rect = self.image.get_rect()
+        self.rect.centerx = position[0]
+        self.rect.centery = position[1]
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)

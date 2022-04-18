@@ -1,6 +1,21 @@
 import subprocess, pygame, platform, ctypes, sys, random
+
+from pygame.event import Event
 import sprites
 from pygame.locals import *
+
+
+
+#------------colors-------------
+
+RED = (255, 3, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (249, 255, 0)
+DARK_PURPLE = (101, 5, 135)
+
+list_colors = [RED, GREEN, BLUE, YELLOW, DARK_PURPLE]
+
 
 
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
@@ -46,34 +61,51 @@ def load_image(filename, width=None, height=None, transparent=False): #covierte 
     return imagen
 
 
-def move(keys, sprite, speed:int):  #Permite el movimiento del personaje principal
-    if keys[K_LEFT]:
-        sprite.rect.x -= speed
-        if keys[K_UP]:
+def move(sprite, speed:int, hand=False):  #Permite el movimiento de cualquier sprite que se le pase como parametro
+    keys = pygame.key.get_pressed()
+    if hand:
+
+        if event.type == KEYDOWN:
+            if pygame.key.name(event.key) == 'a':
+                sprite.rect.x -= WIDTH/4
+            
+            elif pygame.key.name(event.key) == 'd':
+                sprite.rect.x += WIDTH/4
+                
+            # elif keys[K_UP]:
+            #     sprite.rect.y -= speed
+            
+            # elif keys[K_DOWN]:
+            #     sprite.rect.y += speed
+
+    else:
+        if keys[K_LEFT]:
+            sprite.rect.x -= speed
+            if keys[K_UP]:
+                sprite.rect.y -= speed
+            elif keys[K_DOWN]:
+                sprite.rect.y += speed
+
+        elif keys[K_RIGHT]:
+            sprite.rect.x += speed
+            if keys[K_UP]:
+                sprite.rect.y -= speed
+            elif keys[K_DOWN]:
+                sprite.rect.y += speed
+            
+        elif keys[K_UP]:
             sprite.rect.y -= speed
+            if keys[K_RIGHT]:
+                sprite.rect.x += speed
+            elif keys[K_LEFT]:
+                sprite.rect.x -= speed
+
         elif keys[K_DOWN]:
             sprite.rect.y += speed
-
-    elif keys[K_RIGHT]:
-        sprite.rect.x += speed
-        if keys[K_UP]:
-            sprite.rect.y -= speed
-        elif keys[K_DOWN]:
-            sprite.rect.y += speed
-        
-    elif keys[K_UP]:
-        sprite.rect.y -= speed
-        if keys[K_RIGHT]:
-            sprite.rect.x += speed
-        elif keys[K_LEFT]:
-            sprite.rect.x -= speed
-
-    elif keys[K_DOWN]:
-        sprite.rect.y += speed
-        if keys[K_RIGHT]:
-            sprite.rect.x += speed
-        elif keys[K_LEFT]:
-            sprite.rect.x -= speed
+            if keys[K_RIGHT]:
+                sprite.rect.x += speed
+            elif keys[K_LEFT]:
+                sprite.rect.x -= speed
 
 def damange(player, enemy):
         player._attack = random.randint(100, 600)*(1/player._luck)
@@ -86,28 +118,29 @@ def battle(player, enemy, screen, clock, FPS, WIDTH, HEIGHT):
     all_sprites_group = pygame.sprite.Group()
 
     background_image = load_image('Images/battle_stage.jpg', WIDTH, HEIGHT)
-    player1 = sprites.Player('Images/main_character.png', (WIDTH/6, HEIGHT/3), (500, 500), 3, 100)
-    hand = sprites.Hand()
+    player_example = sprites.Player('Images/main_character.png', (WIDTH/6, HEIGHT/3), (500, 500), 3, 100)
     enemy = sprites.Bicho('Images/enemy.png', (50,50), 20, 10)
+    button_attack = sprites.Buttons('attack', (WIDTH/4, HEIGHT-HEIGHT/4))
+    button_spell = sprites.Buttons('spell', (WIDTH/2, HEIGHT-HEIGHT/4))
+    button_luck = sprites.Buttons('luck', (WIDTH-WIDTH/4, HEIGHT-HEIGHT/4))
+    hand = sprites.Hand()
 
-    all_sprites_group.add(player1, hand, enemy)
+    all_sprites_group.add(player_example, hand, enemy, button_attack, button_spell, button_luck)
 
     while True:
         clock.tick(FPS)
-        keys = pygame.key.get_pressed()
 
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit(0)
         
         screen.blit(background_image, (0, 0))
-        move(keys, hand, 100)
-        
-
+        move(hand, 100, True)
         
         all_sprites_group.draw(screen)
 
         hand.update()
 
         pygame.display.flip() #Actualizar contenido en pantalla
-    
+
+
