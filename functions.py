@@ -65,18 +65,17 @@ def move(sprite, speed:int, hand=False):  #Permite el movimiento de cualquier sp
     keys = pygame.key.get_pressed()
     if hand:
 
-        if event.type == KEYDOWN:
-            if pygame.key.name(event.key) == 'a':
-                sprite.rect.x -= WIDTH/4
+        if keys[K_RIGHT]:
+            sprite.speed = WIDTH/4
             
-            elif pygame.key.name(event.key) == 'd':
-                sprite.rect.x += WIDTH/4
-                
-            # elif keys[K_UP]:
-            #     sprite.rect.y -= speed
-            
-            # elif keys[K_DOWN]:
-            #     sprite.rect.y += speed
+        elif keys[K_LEFT]:
+            sprite.speed = -(WIDTH/4)
+
+        # elif keys[K_UP]:
+        #     sprite.rect.y -= speed
+        
+        # elif keys[K_DOWN]:
+        #     sprite.rect.y += speed
 
     else:
         if keys[K_LEFT]:
