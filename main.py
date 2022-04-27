@@ -55,7 +55,7 @@ def main():
         
         collide = pygame.sprite.spritecollide(player1, enemy_group, False)
         if collide:
-            time.sleep(2)
+            time.sleep(1)
             functions.battle(player1, enemy, screen, clock, FPS, functions.WIDTH, functions.HEIGHT)
             
         

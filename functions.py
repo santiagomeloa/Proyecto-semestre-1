@@ -70,14 +70,17 @@ def move(keys, sprite, speed:int, hand=False, pos_x:int=0, pos_y:int=0):  #Permi
         if keys[K_RIGHT]:
             pos_x += 1
 
+
         elif keys[K_LEFT]:
             pos_x -= 1
+
 
         # elif keys[K_UP]:
         #     sprite.rect.y -= speed
         
         # elif keys[K_DOWN]:
         #     sprite.rect.y += speed
+
 
         #----------------------------------------
         if pos_x > 3:

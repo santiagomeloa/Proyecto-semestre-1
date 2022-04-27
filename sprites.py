@@ -1,5 +1,7 @@
 import pygame, random, time, asyncio
 import functions
+from pygame.locals import *
+
 
 color = (12,31,124)
 
@@ -127,8 +129,12 @@ class Hand(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = (functions.WIDTH/4)-(functions.WIDTH*(1/11))
         self.rect.centery = functions.HEIGHT-(functions.HEIGHT/4)
+        self.speed = 0
 
     def update(self):
+        self.rect.centerx += self.speed
+        self.speed = 0
+
         if self.rect.top < 0:
             self.rect.bottom = functions.HEIGHT
 
@@ -136,7 +142,7 @@ class Hand(pygame.sprite.Sprite):
             self.rect.top = 0
 
         elif self.rect.left <= 0:
-            self.rect.right = (functions.WIDTH-functions.WIDTH/4)-180
+            self.rect.right = (functions.WIDTH-functions.WIDTH/4)-160
         
         elif self.rect.right > functions.WIDTH:
             self.rect.left = (functions.WIDTH/4)-180
