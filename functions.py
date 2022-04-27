@@ -16,6 +16,8 @@ DARK_PURPLE = (101, 5, 135)
 
 list_colors = [RED, GREEN, BLUE, YELLOW, DARK_PURPLE]
 
+#-------------functional variables---------------
+
 
 
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
@@ -61,23 +63,42 @@ def load_image(filename, width=None, height=None, transparent=False): #covierte 
     return imagen
 
 
-def move(sprite, speed:int, hand=False):  #Permite el movimiento de cualquier sprite que se le pase como parametro
-    keys = pygame.key.get_pressed()
+def move(keys, sprite, speed:int, hand=False, pos_x:int=0, pos_y:int=0):  #Permite el movimiento de cualquier sprite que se le pase como parametro
+
     if hand:
+        #---------------------------------------
+        if keys[K_RIGHT]:
+            pos_x += 1
 
-        if event.type == KEYDOWN:
-            if pygame.key.name(event.key) == 'a':
-                sprite.rect.x -= WIDTH/4
-            
-            elif pygame.key.name(event.key) == 'd':
-                sprite.rect.x += WIDTH/4
-                
-            # elif keys[K_UP]:
-            #     sprite.rect.y -= speed
-            
-            # elif keys[K_DOWN]:
-            #     sprite.rect.y += speed
+        elif keys[K_LEFT]:
+            pos_x -= 1
 
+        # elif keys[K_UP]:
+        #     sprite.rect.y -= speed
+        
+        # elif keys[K_DOWN]:
+        #     sprite.rect.y += speed
+
+        #----------------------------------------
+        if pos_x > 3:
+            pos_x = 1
+
+        elif pos_x < 1:
+            pos_x = 3
+
+        #----------------------------------------
+        if pos_x == 1:
+            sprite.rect.centerx = (WIDTH/4)-(WIDTH*(1/11))
+
+        elif pos_x == 2:
+            sprite.rect.centerx = (WIDTH/2)-(WIDTH*(1/11))
+
+        elif pos_x == 3:
+            sprite.rect.centerx = (WIDTH-WIDTH/4)-(WIDTH*(1/11))
+
+        #-----------------------------------------
+        return pos_x, pos_y
+            
     else:
         if keys[K_LEFT]:
             sprite.rect.x -= speed
@@ -107,35 +128,48 @@ def move(sprite, speed:int, hand=False):  #Permite el movimiento de cualquier sp
             elif keys[K_LEFT]:
                 sprite.rect.x -= speed
 
-def damange(player, enemy):
+def damage(player, enemy):
         player._attack = random.randint(100, 600)*(1/player._luck)
         enemy._hp = enemy._hp-player._attack
 
 def battle(player, enemy, screen, clock, FPS, WIDTH, HEIGHT):
 
-    FPS = 20
+    FPS = 60
     
-    all_sprites_group = pygame.sprite.Group()
+    pos_x = 1
+    pos_y = 1
 
+    all_sprites_group = pygame.sprite.Group()
     background_image = load_image('Images/battle_stage.jpg', WIDTH, HEIGHT)
+    #---------------------sprites-----------------------
     player_example = sprites.Player('Images/main_character.png', (WIDTH/6, HEIGHT/3), (500, 500), 3, 100)
-    enemy = sprites.Bicho('Images/enemy.png', (50,50), 20, 10)
+    enemy.location = (WIDTH-(WIDTH/3), HEIGHT/2)
+    enemy.area = (500, 500)
     button_attack = sprites.Buttons('attack', (WIDTH/4, HEIGHT-HEIGHT/4))
     button_spell = sprites.Buttons('spell', (WIDTH/2, HEIGHT-HEIGHT/4))
     button_luck = sprites.Buttons('luck', (WIDTH-WIDTH/4, HEIGHT-HEIGHT/4))
     hand = sprites.Hand()
+    hp_player = sprites.Words(f'Tu vida: {player.hp}', 100, RED, (100, 200))
+    hp_enemy = sprites.Words(f'Vida del rival: {enemy.hp,200}', 100, RED, (900, 200))
 
-    all_sprites_group.add(player_example, hand, enemy, button_attack, button_spell, button_luck)
+
+    all_sprites_group.add(player_example, hand, enemy, button_attack, button_spell, button_luck, hp_player, hp_enemy)
 
     while True:
         clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == QUIT:
+                pygame.quit()
                 sys.exit(0)
-        
+        #------------------------keyboard-------------------------
+        keys = pygame.key.get_pressed()
+        pos_x, pos_y = move(keys, hand, 100, True, pos_x, pos_y)
+        if keys[K_KP_ENTER]:
+            if pos_x == 1:
+                damage(player, enemy)
+
         screen.blit(background_image, (0, 0))
-        move(hand, 100, True)
         
         all_sprites_group.draw(screen)
 

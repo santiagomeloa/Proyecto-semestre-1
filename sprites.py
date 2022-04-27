@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self._hp = hp
         self._luck = luck
+        self._attack = random.randint(100, 600)*(1/self._luck)
 
         self.image = functions.load_image(imagen, area[0], area[1], True)
         self.rect = self.image.get_rect()
@@ -37,33 +38,34 @@ class Player(pygame.sprite.Sprite):
         self._luck = luck
     
     def update(self):
-        if self.rect.top > functions.HEIGHT-80:
-            self.rect.top = functions.HEIGHT-80
+        if self.rect.top > functions.HEIGHT-functions.WIDTH*(1/6.3):
+            self.rect.top = functions.HEIGHT-functions.WIDTH*(1/6.3)
 
-        elif self.rect.bottom < 0+80:
-            self.rect.bottom = 0+80
+        elif self.rect.bottom < functions.WIDTH*(1/6.6):
+            self.rect.bottom = functions.WIDTH*(1/6.6)
 
-        elif self.rect.right > functions.WIDTH+5:
-            self.rect.right = functions.WIDTH+5
+        elif self.rect.right > functions.WIDTH-(functions.WIDTH*(1/65)):
+            self.rect.right = functions.WIDTH-(functions.WIDTH*(1/65))
 
-        elif self.rect.left < 0-20:
-            self.rect.left = 0-20
+        elif self.rect.left < functions.WIDTH*(1/60):
+            self.rect.left = functions.WIDTH*(1/60)
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
 
-
 class Bicho(pygame.sprite.Sprite):
-    def __init__(self, imagen, area, hp, damage):
+    def __init__(self, imagen, location, area, hp, damage):
         super().__init__()
         self._hp = hp
         self._damage = damage
+        self._location = location
+        self._area = area
+        self.imagen = imagen
 
-        self.image = functions.load_image(imagen, area[0], area[1], True)
+        self.image = functions.load_image(self.imagen, self.area[0], self.area[1], True)
         self.rect = self.image.get_rect()
-        self.rect.centerx = random.randint(0, functions.WIDTH)
-        self.rect.centery = random.randint(0, functions.HEIGHT)
-    
+        self.rect.centerx = location[0]
+        self.rect.centery = location[1]
     @property
     def hp(self):
         return self._hp
@@ -71,6 +73,23 @@ class Bicho(pygame.sprite.Sprite):
     @hp.setter
     def hp(self, hp):
         self._hp = hp
+
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, location:tuple):
+        self.rect.centerx = location[0]
+        self.rect.centery = location[1]
+
+    @property
+    def area(self):
+        return self._area
+
+    @area.setter
+    def area(self, area):
+        self.image = functions.load_image(self.imagen, area[0], area[1], True)
 
 
     def update(self):
@@ -100,12 +119,13 @@ class Bicho(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
+
 class Hand(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = functions.load_image('Images/hand.jpg', 60, 60, True)
         self.rect = self.image.get_rect()
-        self.rect.centerx = (functions.WIDTH/4)-180
+        self.rect.centerx = (functions.WIDTH/4)-(functions.WIDTH*(1/11))
         self.rect.centery = functions.HEIGHT-(functions.HEIGHT/4)
 
     def update(self):
@@ -168,6 +188,7 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
+
 class Buttons(pygame.sprite.Sprite):
     def __init__(self, type_button, position: tuple):
         super().__init__()
@@ -187,3 +208,4 @@ class Buttons(pygame.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+

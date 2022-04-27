@@ -1,5 +1,5 @@
 import pygame
-import sys, time
+import sys, time, random
 from pygame.locals import *
 import functions
 import sprites
@@ -13,7 +13,7 @@ def main():
     pygame.display.set_caption('Bad dice')
     fuente = pygame.font.Font(None, 50)
 
-    background_image = functions.load_image('Images/wallBackground.jpg', functions.WIDTH, functions.HEIGHT)
+    background_image = functions.load_image('Images/wallBackground.png', functions.WIDTH, functions.HEIGHT+(functions.HEIGHT*(1/5)))
 
     all_sprites_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
@@ -28,22 +28,24 @@ def main():
     all_sprites_group.add(life, hp)
 
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('Images/enemy.png', (50,50), 20, 10)
+        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, functions.WIDTH/3), random.randint(0, functions.HEIGHT/3)), (50,50), 20, 10)
         enemy_group.add(enemy)
 
 
     while True:
         clock.tick(FPS)
+        keys = pygame.key.get_pressed()
 
         for event in pygame.event.get():
             if event.type == QUIT:
+                pygame.quit()
                 sys.exit(0)
         
         screen.blit(background_image, (0, 0))
         #screen.blit(vida, (0, 0))
         #screen.blit(hp, (70, 0))
 
-        functions.move(player1, 5)
+        functions.move(keys, player1, 5)
         all_sprites_group.update()
         enemy_group.update()
 
