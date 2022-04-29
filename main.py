@@ -18,7 +18,7 @@ def main():
     all_sprites_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
 
-    player1 = sprites.Player('Images/main_character.png', (200, 500), (100, 100), 3, 100)
+    player1 = sprites.Player('Images/main_character.png', (200, 500), (300, 300), 3, 100)
     all_sprites_group.add(player1)
 
     #-----------------------texto en pantalla-------------------------
@@ -28,10 +28,11 @@ def main():
     all_sprites_group.add(life, hp)
 
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, functions.WIDTH/3), random.randint(0, functions.HEIGHT/3)), (50,50), 20, 10)
+        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, functions.WIDTH/3), random.randint(0, functions.HEIGHT/3)), (350, 350), 20, 10, random.choice(['card', 'bolt']))
         enemy_group.add(enemy)
 
-
+    pygame.mouse.set_visible(False)
+    
     while True:
         clock.tick(FPS)
         keys = pygame.key.get_pressed()
@@ -40,12 +41,18 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit(0)
-        
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
         screen.blit(background_image, (0, 0))
         #screen.blit(vida, (0, 0))
         #screen.blit(hp, (70, 0))
 
         functions.move(keys, player1, 5)
+        all_sprites_group.draw(screen)
+        enemy_group.draw(screen)
+
+
         all_sprites_group.update()
         enemy_group.update()
 
@@ -55,13 +62,12 @@ def main():
         
         collide = pygame.sprite.spritecollide(player1, enemy_group, False)
         if collide:
+            player1.collide()
             time.sleep(1)
             functions.battle(player1, enemy, screen, clock, FPS, functions.WIDTH, functions.HEIGHT)
             
         
-        all_sprites_group.draw(screen)
 
-        enemy_group.draw(screen)
 
         pygame.display.flip() #Actualizar contenido en pantalla
     return 'game over'

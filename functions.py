@@ -145,29 +145,37 @@ def battle(player, enemy, screen, clock, FPS, WIDTH, HEIGHT):
     all_sprites_group = pygame.sprite.Group()
     background_image = load_image('Images/battle_stage.jpg', WIDTH, HEIGHT)
     #---------------------sprites-----------------------
-    player_example = sprites.Player('Images/main_character.png', (WIDTH/6, HEIGHT/3), (500, 500), 3, 100)
+    player_example = sprites.Player('Images/main_character.png', (WIDTH/6, HEIGHT/3), (900, 900), 3, 100)
     enemy.location = (WIDTH-(WIDTH/3), HEIGHT/2)
-    enemy.area = (500, 500)
+    enemy.area = (1200, 1200)
     button_attack = sprites.Buttons('attack', (WIDTH/4, HEIGHT-HEIGHT/4))
     button_spell = sprites.Buttons('spell', (WIDTH/2, HEIGHT-HEIGHT/4))
     button_luck = sprites.Buttons('luck', (WIDTH-WIDTH/4, HEIGHT-HEIGHT/4))
     hand = sprites.Hand()
-    hp_player = sprites.Words(f'Tu vida: {player.hp}', 100, RED, (100, 200))
-    hp_enemy = sprites.Words(f'Vida del rival: {enemy.hp,200}', 100, RED, (900, 200))
+    # Text
+    hp_player = sprites.Words(f'Tu vida: {player.hp}', 100, RED, (165, 32))
+    hp_enemy = sprites.Words(f'Vida del rival: {enemy.hp}', 100, RED, (1200, 32))
 
 
     all_sprites_group.add(player_example, hand, enemy, button_attack, button_spell, button_luck, hp_player, hp_enemy)
 
+    pygame.mouse.set_visible(True)
+    pygame.event.set_grab(True)
+
     while True:
         clock.tick(FPS)
+        keys = pygame.key.get_pressed()
+        pos_x, pos_y = move(keys, hand, 100, True, pos_x, pos_y)
 
+        #------------------------keyboard-------------------------
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit(0)
-        #------------------------keyboard-------------------------
-        keys = pygame.key.get_pressed()
-        pos_x, pos_y = move(keys, hand, 100, True, pos_x, pos_y)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+
         if keys[K_KP_ENTER]:
             if pos_x == 1:
                 damage(player, enemy)
@@ -175,6 +183,8 @@ def battle(player, enemy, screen, clock, FPS, WIDTH, HEIGHT):
         screen.blit(background_image, (0, 0))
         
         all_sprites_group.draw(screen)
+        player_example.update()
+        enemy.animation()
 
         hand.update()
 
