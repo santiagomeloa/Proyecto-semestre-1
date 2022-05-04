@@ -12,28 +12,44 @@ color = (12,31,124)
 #---------------------------------------------------------------------------------------------------------------------
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, imagen, location, area, hp, luck):
+    def __init__(self, location, area, hp:int, luck:int):
         super().__init__()
         self.frame = 0 #Define en cual posición va a estar el personje
-
+        self.picture = 'Images/main_character.png'
+        self.picture_mirror = 'Images/main_character_mirror.png'
         #-------------------------------frames-------------------------
-        self.sheet = functions.load_image(imagen, area[0], area[1], True)
+        self.sheet = functions.load_image(self.picture, area[0], area[1], True)
+        self.sheet_m = functions.load_image(self.picture_mirror, area[0], area[1], True)
         
         # Posición inicial
-        self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/9.3, self.sheet.get_height()/4.2, self.sheet.get_width()/4.5, self.sheet.get_height()/3.59))
+        self.sheet_m.set_clip(pygame.Rect(self.sheet.get_width()/5.8, self.sheet.get_height()/1.53, self.sheet.get_width()/4.4, self.sheet.get_height()/3.46))
         
         
         
 
-        self.neutral_state = {
-                            -1:(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8),
+        self.neutral_state_left = {
+                            0:(self.sheet.get_width()/9.3, self.sheet.get_height()/4.2, self.sheet.get_width()/4.5, self.sheet.get_height()/3.59),
+                            15:(self.sheet.get_width()/1.65, self.sheet.get_height()/4.1, self.sheet.get_width()/4.33, self.sheet.get_height()/3.59)
+                            }
+
+        self.neutral_state_right = {
+                            0:(self.sheet_m.get_width()/1.479, self.sheet_m.get_height()/4.2, self.sheet_m.get_width()/4.5, self.sheet_m.get_height()/3.59),
+                            15:(self.sheet_m.get_width()/5.8, self.sheet_m.get_height()/4.2, self.sheet_m.get_width()/4.36, self.sheet_m.get_height()/3.59) 
+                            }
+
+        self.waking_move_left = {
                             0:(self.sheet.get_width()/9.3, self.sheet.get_height()/4.2, self.sheet.get_width()/4.5, self.sheet.get_height()/3.59),
                             8:(self.sheet.get_width()/1.65, self.sheet.get_height()/4.1, self.sheet.get_width()/4.33, self.sheet.get_height()/3.59),
                             16:(self.sheet.get_width()/1.66, self.sheet.get_height()/1.53, self.sheet.get_width()/4.4, self.sheet.get_height()/3.45)
                             }
 
+        self.waking_move_right = {
+                            0:(self.sheet_m.get_width()/1.479, self.sheet_m.get_height()/4.2, self.sheet_m.get_width()/4.5, self.sheet_m.get_height()/3.59),
+                            8:(self.sheet_m.get_width()/5.8, self.sheet_m.get_height()/4.2, self.sheet_m.get_width()/4.36, self.sheet_m.get_height()/3.59),
+                            16:(self.sheet_m.get_width()/5.8, self.sheet_m.get_height()/1.53, self.sheet_m.get_width()/4.4, self.sheet_m.get_height()/3.46)
+                            }
 
-        self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.image = self.sheet_m.subsurface(self.sheet_m.get_clip())
 
         self._hp = hp
         self._luck = luck
@@ -43,6 +59,95 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = location[0]
         self.rect.centery = location[1]
     
+    def collide(self):
+        #-1:(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8)
+        # Posición de sorpresa
+        self.sheet_m.set_clip(pygame.Rect(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8))
+        self.image = self.sheet_m.subsurface(self.sheet_m.get_clip())
+
+    def animation(self, direction):
+        self.frame += 1
+
+        if direction == 'left':
+            if self.frame > 30:
+                self.frame = 0
+            if self.frame == 0 or self.frame == 15:
+                self.sheet.set_clip(pygame.Rect(self.neutral_state_left[self.frame]))
+                self.image = self.sheet.subsurface(self.sheet.get_clip())
+
+        elif direction == 'right':
+            if self.frame > 30:
+                self.frame = 0
+            if self.frame == 0 or self.frame == 15:
+                self.sheet.set_clip(pygame.Rect(self.neutral_state_right[self.frame]))
+                self.image = self.sheet_m.subsurface(self.sheet.get_clip())
+
+        elif direction == 'left_m':
+            if self.frame > 24:
+                self.frame = 0
+            if self.frame == 0 or self.frame == 8 or self.frame == 16:
+                self.sheet.set_clip(pygame.Rect(self.waking_move_left[self.frame]))
+                self.image = self.sheet.subsurface(self.sheet.get_clip())
+
+        elif direction == 'right_m':
+            if self.frame > 24:
+                self.frame = 0
+            if self.frame == 0 or self.frame == 8 or self.frame == 16:
+                self.sheet.set_clip(pygame.Rect(self.waking_move_right[self.frame]))
+                self.image = self.sheet_m.subsurface(self.sheet.get_clip())
+
+    def move(self, keys, speed:int = 5):  #Permite el movimiento de cualquier sprite que se le pase como parametro 
+        if keys[K_LEFT]:
+            self.rect.x -= speed
+            if keys[K_UP]:
+                self.rect.y -= speed
+            elif keys[K_DOWN]:
+                self.rect.y += speed
+            return 'left_m'
+
+        elif keys[K_RIGHT]:
+            self.rect.x += speed
+            if keys[K_UP]:
+                self.rect.y -= speed
+            elif keys[K_DOWN]:
+                self.rect.y += speed
+            return 'right_m'
+            
+        elif keys[K_UP]:
+            self.rect.y -= speed
+            if keys[K_RIGHT]:
+                self.rect.x += speed
+            elif keys[K_LEFT]:
+                self.rect.x -= speed
+
+        elif keys[K_DOWN]:
+            self.rect.y += speed
+            if keys[K_RIGHT]:
+                self.rect.x += speed
+            elif keys[K_LEFT]:
+                self.rect.x -= speed
+    
+    def update(self):
+        keys = pygame.key.get_pressed()
+        self.animation(self.move(keys))
+        #self.move(keys)
+
+
+        if self.rect.top > functions.HEIGHT-functions.WIDTH*(1/6.3):
+            self.rect.top = functions.HEIGHT-functions.WIDTH*(1/6.3)
+
+        elif self.rect.bottom < functions.WIDTH*(1/6.6):
+            self.rect.bottom = functions.WIDTH*(1/6.6)
+
+        elif self.rect.right > functions.WIDTH-(functions.WIDTH*(1/65)):
+            self.rect.right = functions.WIDTH-(functions.WIDTH*(1/65))
+
+        elif self.rect.left < functions.WIDTH*(1/60):
+            self.rect.left = functions.WIDTH*(1/60)
+
+    #-----------------------------------
+    #--------setters and getters--------
+    #-----------------------------------
     @property
     def hp(self):
         return self._hp
@@ -59,35 +164,13 @@ class Player(pygame.sprite.Sprite):
     def luck(self, luck):
         self._luck = luck
 
-    def collide(self):
-        # Posición de sorpresa
-        self.sheet.set_clip(pygame.Rect(self.neutral_state[-1]))
-        self.image = self.sheet.subsurface(self.sheet.get_clip())
+    @property
+    def attack(self):
+        return self._attack
 
-    def animation(self):
-        self.frame += 1
-        #if self.frame > (len(self.neutral_state) - 1):
-        if self.frame > 24:
-            self.frame = 0
-        if self.frame == 0 or self.frame == 8 or self.frame == 16:
-            self.sheet.set_clip(pygame.Rect(self.neutral_state[self.frame]))
-            self.image = self.sheet.subsurface(self.sheet.get_clip())
-    
-    def update(self):
-        self.animation()
- 
-        if self.rect.top > functions.HEIGHT-functions.WIDTH*(1/6.3):
-            self.rect.top = functions.HEIGHT-functions.WIDTH*(1/6.3)
-
-        elif self.rect.bottom < functions.WIDTH*(1/6.6):
-            self.rect.bottom = functions.WIDTH*(1/6.6)
-
-        elif self.rect.right > functions.WIDTH-(functions.WIDTH*(1/65)):
-            self.rect.right = functions.WIDTH-(functions.WIDTH*(1/65))
-
-        elif self.rect.left < functions.WIDTH*(1/60):
-            self.rect.left = functions.WIDTH*(1/60)
-
+    @attack.setter
+    def attack(self, attack):
+        self._attack = attack
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -118,7 +201,7 @@ class Bicho(pygame.sprite.Sprite):
 
         self.cardEnemy_moves = {
             0:(self.sheet.get_width()/11.1, self.sheet.get_height()/35, self.sheet.get_width()/2.7, self.sheet.get_height()/2.75),
-            10:(self.sheet.get_width()/1.72, self.sheet.get_height()/35, self.sheet.get_width()/2.7, self.sheet.get_height()/2.75),
+            15:(self.sheet.get_width()/1.72, self.sheet.get_height()/35, self.sheet.get_width()/2.7, self.sheet.get_height()/2.75),
         }
         self.boltEnemy_moves = {
             0:(self.sheet.get_width()/11.56, self.sheet.get_height()/2.28, self.sheet.get_width()/3.44, self.sheet.get_height()/4.49),
@@ -159,12 +242,20 @@ class Bicho(pygame.sprite.Sprite):
     def area(self, area):
         self.image = functions.load_image(self.imagen, area[0], area[1], True)
 
+    @property
+    def damage(self):
+        return self._damage
+
+    @damage.setter
+    def damage(self, damage):
+        self._damage = damage
+
     def animation(self):
         self.frame += 1
         if self.enemy == 'card':
-            if self.frame > 20:
+            if self.frame > 30:
                 self.frame = 0
-            if self.frame == 0 or self.frame == 10:
+            if self.frame == 0 or self.frame == 15:
                 self.sheet.set_clip(pygame.Rect(self.cardEnemy_moves[self.frame]))
                 self.image = self.sheet.subsurface(self.sheet.get_clip())
         if self.enemy == 'bolt':
@@ -289,6 +380,8 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
         self.image = self.fond.render(self.text, 1 , self.color)
         return self.image
 
+        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
@@ -296,20 +389,55 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
 class Buttons(pygame.sprite.Sprite):
     def __init__(self, type_button, position: tuple):
         super().__init__()
+        self.type_button = type_button
         self.sheet = functions.load_image('Images/Botones de control 1.png', 300, 300, True)
-        if type_button == 'attack':
-            self.sheet.set_clip(pygame.Rect(8, 6, 330, 80))
-        elif type_button == 'spell':
-            self.sheet.set_clip(pygame.Rect(10, 108, 235, 88))
-        elif type_button == 'luck':
-            self.sheet.set_clip(pygame.Rect(9, 202, 220, 90))
+        self.sheet_s = functions.load_image('Images/Botones seleccionados.png', 300, 300, True)
+        if self.type_button == 'attack':
+            self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/45, self.sheet.get_width()/1.055, self.sheet.get_height()/3.78))
+        elif self.type_button == 'spell':
+            self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/3, self.sheet.get_width()/1.26, self.sheet.get_height()/3.28))
+        elif self.type_button == 'luck':
+            self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/1.48, self.sheet.get_width()/1.272, self.sheet.get_height()/3.27))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+
+        self.seleccion = {
+            'attack': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/45, self.sheet_s.get_width()/1.055, self.sheet_s.get_height()/3.78),
+            'spell': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/3, self.sheet_s.get_width()/1.26, self.sheet_s.get_height()/3.28),
+            'luck': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/1.48, self.sheet_s.get_width()/1.272, self.sheet_s.get_height()/3.27)
+        }
 
 
         self.rect = self.image.get_rect()
         self.rect.centerx = position[0]
         self.rect.centery = position[1]
 
+
+    def collide_mouse(self):
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.type_button == 'attack':
+                self.sheet_s.set_clip(pygame.Rect(self.seleccion['attack']))
+            elif self.type_button == 'spell':
+                self.sheet_s.set_clip(pygame.Rect(self.seleccion['spell']))
+            elif self.type_button == 'luck':
+                self.sheet_s.set_clip(pygame.Rect(self.seleccion['luck']))
+
+            self.image = self.sheet_s.subsurface(self.sheet_s.get_clip())
+        else:
+            if self.type_button == 'attack':
+                self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/45, self.sheet.get_width()/1.055, self.sheet.get_height()/3.78))
+            elif self.type_button == 'spell':
+                self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/3, self.sheet.get_width()/1.26, self.sheet.get_height()/3.28))
+            elif self.type_button == 'luck':
+                self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/1.48, self.sheet.get_width()/1.272, self.sheet.get_height()/3.27))
+
+            self.image = self.sheet.subsurface(self.sheet.get_clip())
+
+    #def click(self):
+        
+        
+    def update(self):
+        self.collide_mouse()
+        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-

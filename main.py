@@ -18,7 +18,7 @@ def main():
     all_sprites_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
 
-    player1 = sprites.Player('Images/main_character.png', (200, 500), (300, 300), 3, 100)
+    player1 = sprites.Player((200, 500), (300, 300), 100, 100)
     all_sprites_group.add(player1)
 
     #-----------------------texto en pantalla-------------------------
@@ -34,6 +34,7 @@ def main():
     pygame.mouse.set_visible(False)
     
     while True:
+        collides = None
         clock.tick(FPS)
         keys = pygame.key.get_pressed()
 
@@ -48,7 +49,7 @@ def main():
         #screen.blit(vida, (0, 0))
         #screen.blit(hp, (70, 0))
 
-        functions.move(keys, player1, 5)
+        #functions.move(keys, player1, 5)
         all_sprites_group.draw(screen)
         enemy_group.draw(screen)
 
@@ -60,11 +61,16 @@ def main():
         #pygame.font.init()
 
         
-        collide = pygame.sprite.spritecollide(player1, enemy_group, False)
-        if collide:
+        
+        collides = pygame.sprite.spritecollide(player1, enemy_group, False,)
+        if collides:
             player1.collide()
-            time.sleep(1)
-            functions.battle(player1, enemy, screen, clock, FPS, functions.WIDTH, functions.HEIGHT)
+            for collide in collides:
+                result = functions.battle(player1, collide, screen, clock)
+                time.sleep(1)
+                if result == 'win!':
+                    collide.kill()
+            collides.clear()
             
         
 
