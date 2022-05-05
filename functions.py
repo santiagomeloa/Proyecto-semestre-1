@@ -35,7 +35,7 @@ true_result = 0
 
 def equation(screen, clock):
     FPS = 60
-    tup = funciones[random.randint(0, len(funciones))]
+    tup = funciones[random.randint(0, len(funciones)-1)]
     true_result += tup[1]
 
     background_image = load_image('Images/wallBackground.png', WIDTH, HEIGHT)
