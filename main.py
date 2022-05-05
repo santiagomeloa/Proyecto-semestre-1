@@ -11,28 +11,29 @@ def main():
     screen = pygame.display.set_mode((functions.WIDTH, functions.HEIGHT))
     clock = pygame.time.Clock()
     pygame.display.set_caption('Bad dice')
-    fuente = pygame.font.Font(None, 50)
+
 
     background_image = functions.load_image('Images/wallBackground.png', functions.WIDTH, functions.HEIGHT+(functions.HEIGHT*(1/5)))
-
+    #-----------------groups-------------------
     all_sprites_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
 
+    #-----------------sprites------------------
     player1 = sprites.Player((200, 500), (300, 300), 100, 100)
-    all_sprites_group.add(player1)
-
-    #-----------------------texto en pantalla-------------------------
-    hp = sprites.Words(f'{player1.hp}', 50, functions.RED, (70, 20))
-    life = sprites.Words('HP: ', 50, functions.RED, (30, 20))
-    #life = fuente.render('Hp: ', 1, funtions.RED)
-    all_sprites_group.add(life, hp)
-
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, functions.WIDTH/3), random.randint(0, functions.HEIGHT/3)), (350, 350), 20, 10, random.choice(['card', 'bolt']))
+        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, functions.WIDTH), random.randint(0, functions.HEIGHT/3)), (350, 350), 20, 10, random.choice(['card', 'bolt']))
         enemy_group.add(enemy)
 
+    # Text
+    hp = sprites.Words(f'HP {player1.hp}', 30, functions.RED, (functions.WIDTH/6, functions.HEIGHT/20), True)
+
+    all_sprites_group.add(hp)
+    all_sprites_group.add(player1)
+
+
     pygame.mouse.set_visible(False)
-    
+
+
     while True:
         collides = None
         clock.tick(FPS)

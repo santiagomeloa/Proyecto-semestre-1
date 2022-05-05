@@ -17,22 +17,79 @@ list_colors = [RED, GREEN, BLUE, YELLOW, DARK_PURPLE]
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
 
 funciones={
-    0: ('20 - 7x = 6x - 6', '2'),
-    1: ('7x + 2 = 10x + 5', '-1'),
-    2: ('6x - 5 = 8x + 2', '- 7/2'),
-    3: ('4x + 4 + 9x + 18 = 12 (x+2)', '2'),
-    4: ('2 - x = x - 8', '5'),
-    5: ('2x - 1 = 5x + 8', '-3'),
-    6: ('5x - 10 = 10', '4'),
-    7: ('4y - 5 = 3y + 1', '6'),
-    8: ('2(2x - 3) = 2x - 10','-2'),
-    9: ('3x - 4 = 3(2x - 2) - 7','3'),
-    10: ('2(t + 2) - 5 = 5(t - 4) + 13', '2')
+    0: ('20 - 7x = 6x - 6', 2),
+    1: ('7x + 2 = 10x + 5', -1),
+    2: ('6x - 5 = 8x + 2', -7/2),
+    3: ('4x + 4 + 9x + 18 = 12 (x+2)', 2),
+    4: ('2 - x = x - 8', 5),
+    5: ('2x - 1 = 5x + 8', -3),
+    6: ('5x - 10 = 10', 4),
+    7: ('4y - 5 = 3y + 1', 6),
+    8: ('2(2x - 3) = 2x - 10',-2),
+    9: ('3x - 4 = 3(2x - 2) - 7', 3),
+    10: ('2(t + 2) - 5 = 5(t - 4) + 13', 2)
     }
 
-def equation():
-    position = random.randint(0, len(funciones))
-    return funciones[position]
+true_result = 0
+
+
+def equation(screen, clock):
+    FPS = 60
+    tup = funciones[random.randint(0, len(funciones))]
+    true_result += tup[1]
+
+    background_image = load_image('Images/wallBackground.png', WIDTH, HEIGHT)
+
+    #----------groups--------------
+    all_sprites_group = pygame.sprite.Group()
+    words_group = pygame.sprite.Group()
+    buttons_group = pygame.sprite.Group()
+    
+    #---------------------sprites-----------------------
+    
+
+    # Buttons
+    
+    
+    # Text
+    ecuacion = sprites.Words(tup[0],100, RED,(WIDTH/2, HEIGHT/2))
+
+    buttons_group.add()
+    words_group.add(ecuacion)
+    all_sprites_group.add()
+
+    pygame.mouse.set_visible(True)
+    pygame.event.set_grab(True)
+
+    while True:
+        clock.tick(FPS)
+
+        #------------------------input events-------------------------
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+            #-----????-----
+            
+
+        screen.blit(background_image, (0, 0))
+
+
+        buttons_group.draw(screen)
+        words_group.draw(screen)
+        all_sprites_group.draw(screen)
+
+
+    
+
+        
+        pygame.display.flip() #Actualizar contenido en pantalla
+
+    
+    
 
 def screen_size(): # Obtine la resolución de la pantalla dependiendo del sistema operativo
     if sistema == 'Linux':
@@ -96,8 +153,8 @@ def battle(player, enemy, screen, clock):
     button_luck = sprites.Buttons('luck', (WIDTH-WIDTH/4, HEIGHT-HEIGHT/4))
 
     # Text
-    hp_player = sprites.Words(f'Tu vida: {player.hp}', 100, RED, (165, 32))
-    hp_enemy = sprites.Words(f'Vida del rival: {enemy.hp}', 100, RED, (1200, 32))
+    hp_player = sprites.Words(f'Tu vida {player.hp}', 40, RED, (WIDTH/6, HEIGHT/20))
+    hp_enemy = sprites.Words(f'Vida del rival {enemy.hp}', 40, RED, (WIDTH/1.3, HEIGHT/20))
 
 
     buttons_group.add(button_attack, button_spell, button_luck)
@@ -150,7 +207,6 @@ def battle(player, enemy, screen, clock):
             break
 
         if turn_attack == 'enemy': #Ataque del enemigo
-
             enemy.damage = random.randint(100, 600)*(1/100)
             player.hp -= enemy.damage
             turn_attack = 'player'
@@ -161,6 +217,7 @@ def battle(player, enemy, screen, clock):
         
         pygame.display.flip() #Actualizar contenido en pantalla
 
+    equation(screen,clock)
     return 'win!'
 
 

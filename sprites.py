@@ -154,7 +154,7 @@ class Player(pygame.sprite.Sprite):
 
     @hp.setter
     def hp(self, hp):
-        self._hp = hp
+        self._hp = int(hp)
 
     @property
     def luck(self):
@@ -223,7 +223,7 @@ class Bicho(pygame.sprite.Sprite):
     
     @hp.setter
     def hp(self, hp):
-        self._hp = hp
+        self._hp = int(hp)
 
     @property
     def location(self):
@@ -311,44 +311,15 @@ class Bicho(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
 
-class Hand(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = functions.load_image('Images/hand.jpg', 60, 60, True)
-        self.rect = self.image.get_rect()
-        self.rect.centerx = (functions.WIDTH/4)-(functions.WIDTH*(1/11))
-        self.rect.centery = functions.HEIGHT-(functions.HEIGHT/4)
-        self.speed = 0
-
-    def update(self):
-        self.rect.centerx += self.speed
-        self.speed = 0
-
-        if self.rect.top < 0:
-            self.rect.bottom = functions.HEIGHT
-
-        elif self.rect.bottom > functions.HEIGHT:
-            self.rect.top = 0
-
-        elif self.rect.left <= 0:
-            self.rect.right = (functions.WIDTH-functions.WIDTH/4)-160
-        
-        elif self.rect.right > functions.WIDTH:
-            self.rect.left = (functions.WIDTH/4)-180
-
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-
-
 class Words(pygame.sprite.Sprite, pygame.font.Font):
     def __init__(self, text: str, size: int, color, location, multicolor=False):
         super().__init__()
 
-        self.fond = pygame.font.Font(None, size)
+        self.font = pygame.font.Font('texto/pixelart.ttf', size)
         self._text = text
         self._color = color
         self.multicolor = multicolor
-        self.image = self.fond.render(text, 1, self.color)
+        self.image = self.font.render(text, True, self.color)
         self.rect = self.image.get_rect()
         self.rect.centerx = location[0]
         self.rect.centery = location[1]
@@ -377,7 +348,7 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
 
         if self.multicolor:
             self.color = functions.list_colors[x]
-        self.image = self.fond.render(self.text, 1 , self.color)
+        self.image = self.font.render(self.text, 1 , self.color)
         return self.image
 
         
