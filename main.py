@@ -33,7 +33,7 @@ def main():
 
     pygame.mouse.set_visible(False)
 
-
+    functions.music('Music/backGround.mp3')
     while True:
         collides = None
         clock.tick(FPS)

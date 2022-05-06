@@ -315,7 +315,7 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
     def __init__(self, text: str, size: int, color, location, multicolor=False):
         super().__init__()
 
-        self.font = pygame.font.Font('texto/pixelart.ttf', size)
+        self.font = pygame.font.Font('texto/04B_30__.ttf', size)
         self._text = text
         self._color = color
         self.multicolor = multicolor
@@ -360,23 +360,37 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
 class Buttons(pygame.sprite.Sprite):
     def __init__(self, type_button, position: tuple):
         super().__init__()
-        self.type_button = type_button
+        self.type_button = type_button # variable que ayuda a identificar el tipo de botón que se quiere usar
+
+        self.numbers_buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
         self.sheet = functions.load_image('Images/Botones de control 1.png', 300, 300, True)
         self.sheet_s = functions.load_image('Images/Botones seleccionados.png', 300, 300, True)
+
         if self.type_button == 'attack':
             self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/45, self.sheet.get_width()/1.055, self.sheet.get_height()/3.78))
+            self.image = self.sheet.subsurface(self.sheet.get_clip())
+
         elif self.type_button == 'spell':
             self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/3, self.sheet.get_width()/1.26, self.sheet.get_height()/3.28))
+            self.image = self.sheet.subsurface(self.sheet.get_clip())
+
         elif self.type_button == 'luck':
             self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/1.48, self.sheet.get_width()/1.272, self.sheet.get_height()/3.27))
-        self.image = self.sheet.subsurface(self.sheet.get_clip())
+            self.image = self.sheet.subsurface(self.sheet.get_clip())
 
+        else:
+            for number_button in self.numbers_buttons:
+                if self.type_button == number_button:
+                    number = str(self.type_button)
+                    self.image = functions.load_image(f'Images/Numbers/{number}_default.png',200, 80)
+        
+        
         self.seleccion = {
             'attack': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/45, self.sheet_s.get_width()/1.055, self.sheet_s.get_height()/3.78),
             'spell': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/3, self.sheet_s.get_width()/1.26, self.sheet_s.get_height()/3.28),
             'luck': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/1.48, self.sheet_s.get_width()/1.272, self.sheet_s.get_height()/3.27)
         }
-
 
         self.rect = self.image.get_rect()
         self.rect.centerx = position[0]
@@ -403,12 +417,34 @@ class Buttons(pygame.sprite.Sprite):
 
             self.image = self.sheet.subsurface(self.sheet.get_clip())
 
-    #def click(self):
-        
         
     def update(self):
-        self.collide_mouse()
+        if type(self.type_button) != int:
+            self.collide_mouse()
         
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+
+class Stars(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = functions.load_image('images/star.png', 30, 30, True)
+        self.rect = self.image.get_rect()
+
+        self.rect.centery = random.randint(0, functions.HEIGHT)
+        self.rect.centerx = random.randint(0, functions.WIDTH)
+
+    def update(self):
+        self.rect.centerx +=3
+        self.rect.centery += 3
+
+        if self.rect.bottom > functions.HEIGHT:
+            self.rect.top = 0
+
+        elif self.rect.right > functions.WIDTH:
+            self.rect.left = 0
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
