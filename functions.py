@@ -70,7 +70,9 @@ def equation(screen, clock):
 
     # Text
     ecuacion = sprites.Words(tup[0],70, RED,(WIDTH/2, HEIGHT/6))
-    words_group.add(ecuacion)
+    solution=sprites.Words('12000', 70, RED, (WIDTH/2, HEIGHT/4) )
+    words_group.add(ecuacion, solution)
+   
 
 
     pygame.mouse.set_visible(True)
@@ -100,7 +102,7 @@ def equation(screen, clock):
         #-------------------update sprites on screen--------------
         stars_group.update()
         #buttons_group.update()
-
+        
         pygame.display.flip() #Actualizar contenido en pantalla
 
 
@@ -144,7 +146,11 @@ def damage(player, enemy):
     player.attack = random.randint(100, 600)*(1/player._luck)
     enemy.hp -= player.attack
 
-
+def SpecialDamage(player,enemy):
+        player.attack = random.randint(90,160)/player._luck
+        enemy.hp -= player.attack
+        player._mana-=30
+    
 def battle(player, enemy, screen, clock):
     FPS = 60
     turn_attack = 'player'
@@ -159,7 +165,7 @@ def battle(player, enemy, screen, clock):
     background_image = load_image('Images/battle_stage.png', WIDTH, HEIGHT,True)
     player_example = sprites.Player((WIDTH/6, HEIGHT/3), (900, 900), 3, 100)
     enemy.location = (WIDTH-(WIDTH/5), HEIGHT/3.5)
-    enemy.area = (1500, 1500)
+    enemy.area = (2000, 2000)
     for n in range(100):
         star = sprites.Stars()
         stars_group.add(star)
@@ -172,10 +178,12 @@ def battle(player, enemy, screen, clock):
     # Text
     hp_player = sprites.Words(f'Tu vida {player.hp}', 40, RED, (WIDTH/6, HEIGHT/20))
     hp_enemy = sprites.Words(f'Vida del rival {enemy.hp}', 40, RED, (WIDTH/1.3, HEIGHT/20))
-
+    potions = sprites.Words(f'Pociones disponibles: {player._potions}', 20, RED, (WIDTH/2, HEIGHT-HEIGHT/9))
+    mana = sprites.Words(f'Mana: {player._mana}', 20, BLUE, (WIDTH-WIDTH/4, HEIGHT-HEIGHT/9))
+    
     #adding to groups
     buttons_group.add(button_attack, button_spell, button_luck)
-    words_group.add(hp_enemy, hp_player)
+    words_group.add(hp_enemy, hp_player, potions, mana)
     all_sprites_group.add(player_example, enemy)
 
     pygame.mouse.set_visible(True) #Pone el mouse visible
@@ -201,12 +209,19 @@ def battle(player, enemy, screen, clock):
                     damage(player, enemy)
                     turn_attack = 'enemy'
                     pygame.mouse.set_visible(False)
+                    player._mana+=5
             elif button_spell.rect.collidepoint(pygame.mouse.get_pos()):
                 if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                    pass
+                    if player._potions>0 and player._hp<100:
+                        use_potion(player)
+                        turn_attack = 'enemy'
+                        pygame.mouse.set_visible(False)
+                        player._mana+=5    
             elif button_luck.rect.collidepoint(pygame.mouse.get_pos()):
-                if event.type == MOUSEBUTTONDOWN and event.button == 1:
-                    pass
+                if event.type == MOUSEBUTTONDOWN and event.button == 1 and player._mana>=30:
+                    SpecialDamage(player,enemy)
+                    turn_attack = 'enemy'
+                    pygame.mouse.set_visible(False)
 
         #------------drawing sprites on screen------------
         screen.fill(DARK_BLUE)
@@ -219,7 +234,16 @@ def battle(player, enemy, screen, clock):
         #-------------update sprites on screen--------------
         hp_player.text = f'Tu vida: {player.hp}'
         hp_enemy.text = f'Vida del rival: {enemy.hp}'
-
+        if player._potions>0: 
+            potions.text = f"Pociones disponibles: {player._potions}"
+        else:
+            potions.text=f'No se puede curar'
+        if (player._mana-30)>=0: 
+            mana.text = f'Mana: {player._mana}'
+        else:
+            mana.text = f'Sin mana suficiente'
+        
+        
         player_example.animation('right')
         enemy.animation()
         buttons_group.update()
@@ -239,8 +263,14 @@ def battle(player, enemy, screen, clock):
             break
         
         pygame.display.flip() #Actualizar contenido en pantalla
-
-    equation(screen,clock)
+    solution= equation(screen,clock)
     return 'win!'
 
+def use_potion(player):
+    if player.hp<100 and player.hp>=80 and player._potions>0:
+        player.hp=100
+        player._potions-=1
+    elif player.hp<80 and player._potions>0:
+        player.hp+=20
+        player._potions-=1
 

@@ -54,6 +54,8 @@ class Player(pygame.sprite.Sprite):
         self._hp = hp
         self._luck = luck
         self._attack = random.randint(100, 600)*(1/self._luck)
+        self._potions = 4
+        self._mana = 100
 
         self.rect = self.image.get_rect()
         self.rect.centerx = location[0]
