@@ -35,9 +35,10 @@ funciones={
     10: ('2(t + 2) - 5 = 5(t - 4) + 13', 2)
     }
 true_result = 0
+player_result = 0
 
 
-def equation(screen, clock):
+def equation(screen, clock, player):
     global true_result
     FPS = 60
     tup = funciones[random.randint(0, len(funciones)-1)]
@@ -56,27 +57,43 @@ def equation(screen, clock):
     
     # Buttons
     
-    for number in range(0, 10):
+    for number in range(0, 13):
         positions = (
             (2.6, 2), (2, 2), (1.6, 2), 
             (2.6, 1.7), (2, 1.7), (1.6, 1.7), 
             (2.6, 1.49), (2, 1.49), (1.6, 1.49), 
-            (2.6, 1.32)
+            (2.6, 1.32), (2, 1.32), (1.6, 1.32),
+            (1.2, 1.6)
             )
-        #for position in positions:
         position = positions[number]
-        number_button = sprites.Buttons(number, ((WIDTH/position[0]), HEIGHT/position[1]))
-        buttons_group.add(number_button)
+
+        if number <= 9:
+            number_button = sprites.Buttons(number, (WIDTH/position[0], HEIGHT/position[1]))
+            buttons_group.add(number_button)
+
+        elif number == 10:
+            number_button = sprites.Buttons('minius', (WIDTH/position[0], HEIGHT/position[1]))
+            buttons_group.add(number_button)
+
+        elif number == 11:
+            number_button = sprites.Buttons('split', (WIDTH/position[0], HEIGHT/position[1]))
+            buttons_group.add(number_button)
+
+        elif number == 12:
+            ok_button = sprites.Buttons('ok', (WIDTH/position[0], HEIGHT/position[1]))
+            buttons_group.add(ok_button)
 
     # Text
     ecuacion = sprites.Words(tup[0],70, RED,(WIDTH/2, HEIGHT/6))
     words_group.add(ecuacion)
 
-
     pygame.mouse.set_visible(True)
-    #pygame.event.set_grab(True)
+    pygame.event.set_grab(True)
 
-    while True:
+    player_answer = ''
+    bucle = True
+
+    while bucle:
         clock.tick(FPS)
 
         #------------------------input events-------------------------
@@ -88,21 +105,41 @@ def equation(screen, clock):
                 if event.key == K_ESCAPE:
                     sys.exit(0)
             #-----????-----
-            
+            for button in buttons_group:
+                if button.rect.collidepoint(pygame.mouse.get_pos()):
+                    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+
+                        if type(button.type_button) == int:
+                            for numb in range(12):
+                                if numb == button.type_button:
+                                    player_answer += str(button.type_button)
+
+                        elif button.type_button == 'minius':
+                            player_answer += '-'
+
+                        elif button.type_button == 'split':
+                            player_answer += '/'
+                        
+                        elif button.type_button == 'ok':
+                            if true_result == player_result:
+                                player.luck +=1
+                            bucle = False
+
         #----------------drawing sprites on screen--------------
         #screen.blit(background_image, (0, 0))
         screen.fill(BLUE)
         stars_group.draw(screen)
         buttons_group.draw(screen)
-
         words_group.draw(screen)
 
         #-------------------update sprites on screen--------------
         stars_group.update()
-        #buttons_group.update()
+        buttons_group.update()
 
         pygame.display.flip() #Actualizar contenido en pantalla
+        print(player_answer)
 
+    return int(player_answer)
 
 def screen_size(): # Obtine la resolución de la pantalla dependiendo del sistema operativo
     if sistema == 'Linux':
@@ -141,13 +178,15 @@ def load_image(filename, width=None, height=None, transparent=False): #covierte 
 
 
 def damage(player, enemy):
-    player.attack = random.randint(100, 600)*(1/player._luck)
+    player.attack = random.randint(100, 600)*(player.luck/2)
     enemy.hp -= player.attack
 
 
 def battle(player, enemy, screen, clock):
+    global player_result
     FPS = 60
     turn_attack = 'player'
+    music('Music/battle.mp3') #llama a la función que activa la musica
     
     #----------groups--------------
     all_sprites_group = pygame.sprite.Group()
@@ -181,7 +220,6 @@ def battle(player, enemy, screen, clock):
     pygame.mouse.set_visible(True) #Pone el mouse visible
     pygame.event.set_grab(True) #Bloquea el mouse para que no se salga de la pantalla
 
-    music('Music/battle.mp3') #llama a la función que activa la musica
 
     while player.hp > 0 or enemy.hp > 0:
         clock.tick(FPS)
@@ -240,7 +278,8 @@ def battle(player, enemy, screen, clock):
         
         pygame.display.flip() #Actualizar contenido en pantalla
 
-    equation(screen,clock)
+    player_result += equation(screen, clock, player)
+    music('Music/backGround.mp3')
     return 'win!'
 
 

@@ -8,6 +8,8 @@ import sprites
 FPS = 60
 
 def main():
+    functions.music('Music/backGround.mp3')
+    
     screen = pygame.display.set_mode((functions.WIDTH, functions.HEIGHT))
     clock = pygame.time.Clock()
     pygame.display.set_caption('Bad dice')
@@ -33,7 +35,6 @@ def main():
 
     pygame.mouse.set_visible(False)
 
-    functions.music('Music/backGround.mp3')
     while True:
         collides = None
         clock.tick(FPS)
@@ -58,10 +59,7 @@ def main():
         all_sprites_group.update()
         enemy_group.update()
 
-        
-        #pygame.font.init()
 
-        
         
         collides = pygame.sprite.spritecollide(player1, enemy_group, False,)
         if collides:
