@@ -274,3 +274,6 @@ def use_potion(player):
         player.hp+=20
         player._potions-=1
 
+def movement():
+    point=random.randint(-50, 50)
+    return point

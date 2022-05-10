@@ -21,7 +21,7 @@ def main():
     #-----------------sprites------------------
     player1 = sprites.Player((200, 500), (300, 300), 100, 100)
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, functions.WIDTH), random.randint(0, functions.HEIGHT/3)), (350, 350), 20, 10, random.choice(['card', 'bolt']))
+        enemy = sprites.Bicho('Images/enemy.png',( random.randint(((1/2)*functions.WIDTH*(1/60)//1), (functions.WIDTH-(functions.WIDTH*(1/65)//1))), random.randint((functions.WIDTH*(1/6.6)//1), (functions.HEIGHT-functions.WIDTH*(1/6.3)//1))), (350, 350), 20, 10, random.choice(['card', 'bolt']))
         enemy_group.add(enemy)
 
     # Text

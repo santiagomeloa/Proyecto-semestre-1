@@ -4,7 +4,7 @@ from pygame.locals import *
 
 
 color = (12,31,124)
-
+contador=10**100000
 
 
 #---------------------------------------------------------------------------------------------------------------------
@@ -267,32 +267,36 @@ class Bicho(pygame.sprite.Sprite):
                 self.sheet.set_clip(pygame.Rect(self.boltEnemy_moves[self.frame]))
                 self.image = self.sheet.subsurface(self.sheet.get_clip())
 
-    def move(self):
+    def move(self, contador):
+        if contador==(10**100000):
+            point=functions.movement()
+            contador=0
         if self.enemy == 'card':
             if self.frame == 0:
-                self.rect.x += 10
+                self.rect.x += point
 
             elif self.frame == 15:
-                self.rect.y += 10
-                self.rect.x += 2
-                self.rect.y -= 10
+                self.rect.y += point
+                self.rect.x += point-2
+                self.rect.y -= point
                 
         elif self.enemy == 'bolt':
             if self.frame == 0:
-                self.rect.x += 50
+                self.rect.x += point
 
             elif self.frame == 8:
-                self.rect.y += 80
+                self.rect.y += point+5
 
             elif self.frame == 16:
-                self.rect.x -= 86
+                self.rect.x -= point
 
             elif self.frame == 24:
-                self.rect.y -= 32
-
+                self.rect.y -= point+5
+        contador+=0.00001
+        
     def update(self):
         self.animation()
-        self.move()
+        self.move(contador)
         
                 
         if self.rect.top < 0:
