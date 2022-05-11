@@ -1,5 +1,5 @@
 import pygame, random, time, asyncio
-import functions
+import function
 from pygame.locals import *
 
 
@@ -18,15 +18,12 @@ class Player(pygame.sprite.Sprite):
         self.picture = 'Images/main_character.png'
         self.picture_mirror = 'Images/main_character_mirror.png'
         #-------------------------------frames-------------------------
-        self.sheet = functions.load_image(self.picture, area[0], area[1], True)
-        self.sheet_m = functions.load_image(self.picture_mirror, area[0], area[1], True)
+        self.sheet = function.load_image(self.picture, area[0], area[1], True)
+        self.sheet_m = function.load_image(self.picture_mirror, area[0], area[1], True)
         
         # Posición inicial
         self.sheet_m.set_clip(pygame.Rect(self.sheet.get_width()/5.8, self.sheet.get_height()/1.53, self.sheet.get_width()/4.4, self.sheet.get_height()/3.46))
         
-        
-        
-
         self.neutral_state_left = {
                             0:(self.sheet.get_width()/9.3, self.sheet.get_height()/4.2, self.sheet.get_width()/4.5, self.sheet.get_height()/3.59),
                             15:(self.sheet.get_width()/1.65, self.sheet.get_height()/4.1, self.sheet.get_width()/4.33, self.sheet.get_height()/3.59)
@@ -54,14 +51,14 @@ class Player(pygame.sprite.Sprite):
         self._hp = hp
         self._luck = luck
         self._attack = random.randint(100, 600)*(1/self._luck)
+        self._potions = 4
+        self._mana = 100
 
         self.rect = self.image.get_rect()
         self.rect.centerx = location[0]
         self.rect.centery = location[1]
     
     def collide(self):
-        #-1:(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8)
-        # Posición de sorpresa
         self.sheet_m.set_clip(pygame.Rect(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8))
         self.image = self.sheet_m.subsurface(self.sheet_m.get_clip())
 
@@ -130,20 +127,21 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         keys = pygame.key.get_pressed()
         self.animation(self.move(keys))
-        #self.move(keys)
+  
+        if self.rect.top > function.HEIGHT-function.WIDTH*(1/6.3):
+            self.rect.top = function.HEIGHT-function.WIDTH*(1/6.3)
 
+        elif self.rect.bottom < function.WIDTH*(1/6.6):
+            self.rect.bottom = function.WIDTH*(1/6.6)
 
-        if self.rect.top > functions.HEIGHT-functions.WIDTH*(1/6.3):
-            self.rect.top = functions.HEIGHT-functions.WIDTH*(1/6.3)
+        elif self.rect.right > function.WIDTH-(function.WIDTH*(1/65)):
+            self.rect.right = function.WIDTH-(function.WIDTH*(1/65))
 
-        elif self.rect.bottom < functions.WIDTH*(1/6.6):
-            self.rect.bottom = functions.WIDTH*(1/6.6)
+        elif self.rect.left < function.WIDTH*(1/60):
+            self.rect.left = function.WIDTH*(1/60)
 
-        elif self.rect.right > functions.WIDTH-(functions.WIDTH*(1/65)):
-            self.rect.right = functions.WIDTH-(functions.WIDTH*(1/65))
-
-        elif self.rect.left < functions.WIDTH*(1/60):
-            self.rect.left = functions.WIDTH*(1/60)
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
 
     #-----------------------------------
     #--------setters and getters--------
@@ -171,10 +169,15 @@ class Player(pygame.sprite.Sprite):
     @attack.setter
     def attack(self, attack):
         self._attack = attack
+    
+    @property
+    def mana(self):
+        return self._mana
 
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-
+    @mana.setter
+    def mana(self, mana):
+        self._mana = mana
+        
 
 class Bicho(pygame.sprite.Sprite):
     def __init__(self, imagen, location, area, hp, damage, enemy):
@@ -188,7 +191,7 @@ class Bicho(pygame.sprite.Sprite):
 
         #----------------------frames------------------------
         self.frame = 0
-        self.sheet = functions.load_image(self.imagen, self.area[0], self.area[1], True)
+        self.sheet = function.load_image(self.imagen, self.area[0], self.area[1], True)
 
         # Posición inicial card
         if self.enemy == 'card':
@@ -240,7 +243,7 @@ class Bicho(pygame.sprite.Sprite):
 
     @area.setter
     def area(self, area):
-        self.image = functions.load_image(self.imagen, area[0], area[1], True)
+        self.image = function.load_image(self.imagen, area[0], area[1], True)
 
     @property
     def damage(self):
@@ -291,22 +294,20 @@ class Bicho(pygame.sprite.Sprite):
     def update(self):
         self.animation()
         self.move()
-        
-                
-        if self.rect.top < 0:
-            self.rect.bottom = functions.HEIGHT
+             
+        if self.rect.top > function.HEIGHT-function.WIDTH*(1/6.3):
+            self.rect.bottom = function.WIDTH*(1/6.6)
 
-        elif self.rect.bottom > functions.HEIGHT:
-            self.rect.top = 0
+        elif self.rect.bottom < function.WIDTH*(1/6.6):
+            self.rect.top = function.HEIGHT-function.WIDTH*(1/6.3)
 
-        elif self.rect.left <= 0:
-            self.rect.right = functions.WIDTH
-        
-        elif self.rect.right > functions.WIDTH:
-            self.rect.left = 0
+        elif self.rect.right > function.WIDTH-(function.WIDTH*(1/65)):
+            self.rect.left = function.WIDTH*(1/60)
+
+        elif self.rect.left < function.WIDTH*(1/60):
+            self.rect.right = function.WIDTH-(function.WIDTH*(1/65))
          
-
-
+         
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
@@ -342,16 +343,14 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
         self._color = color
 
 
-
     def update(self):
-        x = random.randint(0, len(functions.list_colors)-1)
+        x = random.randint(0, len(function.list_colors)-1)
 
         if self.multicolor:
-            self.color = functions.list_colors[x]
+            self.color = function.list_colors[x]
         self.image = self.font.render(self.text, 1 , self.color)
         return self.image
 
-        
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -364,8 +363,8 @@ class Buttons(pygame.sprite.Sprite):
 
         self.numbers_buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-        self.sheet = functions.load_image('Images/Buttons/Botones de control 1.png', 300, 300, True)
-        self.sheet_s = functions.load_image('Images/Buttons/Botones seleccionados.png', 300, 300, True)
+        self.sheet = function.load_image('Images/Buttons/Botones de control 1.png', 300, 300, True)
+        self.sheet_s = function.load_image('Images/Buttons/Botones seleccionados.png', 300, 300, True)
 
         if self._type_button == 'attack':
             self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/35, self.sheet.get_height()/45, self.sheet.get_width()/1.055, self.sheet.get_height()/3.78))
@@ -380,19 +379,23 @@ class Buttons(pygame.sprite.Sprite):
             self.image = self.sheet.subsurface(self.sheet.get_clip())
 
         elif self._type_button == 'minius':
-            self.image = functions.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
+            self.image = function.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
         
         elif self._type_button == 'split':
-            self.image = functions.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
+            self.image = function.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
 
         elif self._type_button == 'ok':
-            self.image = functions.load_image(f'Images/Buttons/{self._type_button}_default.png', 200, 80)
+            self.image = function.load_image(f'Images/Buttons/{self._type_button}_default.png', 200, 80)
+
+        elif self._type_button == 'play':
+            self.image = function.load_image('Images/Buttons/play_default.png', 400, 150)
         
         elif type(self._type_button == int):
             for number_button in self.numbers_buttons:
                 if self._type_button == number_button:
                     number = str(self._type_button)
-                    self.image = functions.load_image(f'Images/Numbers/{number}_default.png',200, 80)
+                    self.image = function.load_image(f'Images/Numbers/{number}_default.png',200, 80)
+
         self.seleccion = {
             'attack': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/45, self.sheet_s.get_width()/1.055, self.sheet_s.get_height()/3.78),
             'spell': (self.sheet_s.get_width()/35, self.sheet_s.get_height()/3, self.sheet_s.get_width()/1.26, self.sheet_s.get_height()/3.28),
@@ -419,16 +422,19 @@ class Buttons(pygame.sprite.Sprite):
                 self.image = self.sheet_s.subsurface(self.sheet_s.get_clip())
 
             elif self._type_button == 'minius':
-                self.image = functions.load_image('Images/Numbers/minius_selected.png', 200, 80)
+                self.image = function.load_image('Images/Numbers/minius_selected.png', 200, 80)
             
             elif self._type_button == 'split':
-                self.image = functions.load_image('Images/Numbers/split_selected.png', 200, 80)
+                self.image = function.load_image('Images/Numbers/split_selected.png', 200, 80)
             
             elif self._type_button == 'ok':
-                self.image = functions.load_image('Images/Buttons/ok_selected.png', 200, 80)
+                self.image = function.load_image('Images/Buttons/ok_selected.png', 200, 80)
+            
+            elif self._type_button == 'play':
+                self.image = function.load_image('Images/Buttons/play_selected.png', 400, 150)
 
             elif type(self.type_button) == int:
-                self.image = functions.load_image(f'Images/Numbers/{self.type_button}_selected.png', 200, 80)
+                self.image = function.load_image(f'Images/Numbers/{self.type_button}_selected.png', 200, 80)
 
         else:
             if self._type_button == 'attack':
@@ -444,16 +450,19 @@ class Buttons(pygame.sprite.Sprite):
                 self.image = self.sheet.subsurface(self.sheet.get_clip())
 
             elif self._type_button == 'minius':
-                self.image = functions.load_image('Images/Numbers/minius_default.png', 200, 80)
+                self.image = function.load_image('Images/Numbers/minius_default.png', 200, 80)
 
             elif self._type_button == 'split':
-                self.image = functions.load_image('Images/Numbers/split_default.png', 200, 80)
+                self.image = function.load_image('Images/Numbers/split_default.png', 200, 80)
             
             elif self._type_button == 'ok':
-                self.image = functions.load_image('Images/Buttons/ok_default.png', 200, 80)
+                self.image = function.load_image('Images/Buttons/ok_default.png', 200, 80)
+        
+            elif self._type_button == 'play':
+                self.image = function.load_image('Images/Buttons/play_default.png', 400, 150)
 
             elif type(self._type_button) == int:
-                self.image = functions.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
+                self.image = function.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
 
 
     def update(self):
@@ -471,20 +480,20 @@ class Buttons(pygame.sprite.Sprite):
 class Stars(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = functions.load_image('images/star.png', 30, 30, True)
+        self.image = function.load_image('images/star.png', 30, 30, True)
         self.rect = self.image.get_rect()
 
-        self.rect.centery = random.randint(0, functions.HEIGHT)
-        self.rect.centerx = random.randint(0, functions.WIDTH)
+        self.rect.centery = random.randint(0, function.HEIGHT)
+        self.rect.centerx = random.randint(0, function.WIDTH)
 
     def update(self):
         self.rect.centerx +=3
         self.rect.centery += 3
 
-        if self.rect.bottom > functions.HEIGHT:
+        if self.rect.bottom > function.HEIGHT:
             self.rect.top = 0
 
-        elif self.rect.right > functions.WIDTH:
+        elif self.rect.right > function.WIDTH:
             self.rect.left = 0
 
     def draw(self, screen):
