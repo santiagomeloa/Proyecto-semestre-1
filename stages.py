@@ -16,7 +16,7 @@ def main_stage(FPS):
     background_image = function.load_image('Images/wallBackground.png', function.WIDTH, function.HEIGHT+(function.HEIGHT*(1/5)))
     player1 = sprites.Player((200, 500), (300, 300), 100, 100)
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('Images/enemy.png',(random.randint(0, function.WIDTH), random.randint(0, function.HEIGHT/3)), (350, 350), 20, 10, random.choice(['card', 'bolt']))
+        enemy = sprites.Bicho('Images/enemy.png',( random.randint(((1/2)*function.WIDTH*(1/60)//1), (function.WIDTH-(function.WIDTH*(1/65)//1))), random.randint((function.WIDTH*(1/6.6)//1), (function.HEIGHT-function.WIDTH*(1/6.3)//1))), (350, 350), 20, 10, random.choice(['card', 'bolt']))
         enemy_group.add(enemy)
 
     # Text
