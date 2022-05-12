@@ -1,6 +1,7 @@
 import pygame, random, time, asyncio
 import function
 from pygame.locals import *
+from function import WIDTH, HEIGHT
 
 
 color = (12,31,124)
@@ -59,8 +60,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.centery = location[1]
     
     def collide(self):
-        self.sheet_m.set_clip(pygame.Rect(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8))
-        self.image = self.sheet_m.subsurface(self.sheet_m.get_clip())
+        self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/13.4, self.sheet.get_height()/1.7, self.sheet.get_width()/3.8, self.sheet.get_height()/2.8))
+        self.image = self.sheet.subsurface(self.sheet_m.get_clip())
 
     def animation(self, direction):
         self.frame += 1
@@ -302,14 +303,6 @@ class Bicho(pygame.sprite.Sprite):
              
         if self.rect.top > function.HEIGHT-function.WIDTH*(1/6.3):
             self.rect.bottom = function.WIDTH*(1/6.6)       
-        
-                
-        # if self.rect.top < 0:
-        #     self.rect.bottom = functions.HEIGHT
-
-        # elif self.rect.bottom > functions.HEIGHT:
-        #     self.rect.top = 0
-
 
         elif self.rect.bottom < function.WIDTH*(1/6.6):
             self.rect.top = function.HEIGHT-function.WIDTH*(1/6.3)
@@ -357,10 +350,10 @@ class Words(pygame.sprite.Sprite, pygame.font.Font):
 
 
     def update(self):
-        x = random.randint(0, len(function.list_colors)-1)
+        x = random.randint(0, len(function.colors_list)-1)
 
         if self.multicolor:
-            self.color = function.list_colors[x]
+            self.color = function.colors_list[x]
         self.image = self.font.render(self.text, 1 , self.color)
         return self.image
 
@@ -392,16 +385,19 @@ class Buttons(pygame.sprite.Sprite):
             self.image = self.sheet.subsurface(self.sheet.get_clip())
 
         elif self._type_button == 'minius':
-            self.image = function.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
+            self.image = function.load_image('Images/Numbers/minius_default.png', 200, 80)
         
         elif self._type_button == 'split':
-            self.image = function.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
+            self.image = function.load_image('Images/Numbers/split_default.png', 200, 80)
 
         elif self._type_button == 'ok':
-            self.image = function.load_image(f'Images/Buttons/{self._type_button}_default.png', 200, 80)
+            self.image = function.load_image('Images/Buttons/ok_default.png', 200, 80)
 
         elif self._type_button == 'play':
             self.image = function.load_image('Images/Buttons/play_default.png', 400, 150)
+        
+        elif self._type_button == 'delete':
+            self.image = function.load_image('Images/Numbers/delete_default.png', 200, 80)
         
         elif type(self._type_button == int):
             for number_button in self.numbers_buttons:
@@ -446,6 +442,9 @@ class Buttons(pygame.sprite.Sprite):
             elif self._type_button == 'play':
                 self.image = function.load_image('Images/Buttons/play_selected.png', 400, 150)
 
+            elif self._type_button == 'delete':
+                self.image = function.load_image('Images/Numbers/delete_selected.png', 200, 80)
+
             elif type(self.type_button) == int:
                 self.image = function.load_image(f'Images/Numbers/{self.type_button}_selected.png', 200, 80)
 
@@ -473,6 +472,9 @@ class Buttons(pygame.sprite.Sprite):
         
             elif self._type_button == 'play':
                 self.image = function.load_image('Images/Buttons/play_default.png', 400, 150)
+
+            elif self._type_button == 'delete':
+                self.image = function.load_image('Images/Numbers/delete_default.png', 200, 80)
 
             elif type(self._type_button) == int:
                 self.image = function.load_image(f'Images/Numbers/{self.type_button}_default.png', 200, 80)
@@ -508,6 +510,66 @@ class Stars(pygame.sprite.Sprite):
 
         elif self.rect.right > function.WIDTH:
             self.rect.left = 0
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+class Boss(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self._hp = 50
+        self.image = function.load_image('Images/star.png', WIDTH/20, HEIGHT/20)
+        self.rect = self.image.get_rect()
+
+        self.rect.centerx = WIDTH/2
+        self.rect.centery = HEIGHT/2
+
+    
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+class Points(pygame.sprite.Sprite):
+    def __init__(self):
+        self.contador = 0
+        super().__init__()
+        self.image = function.load_image('images/star.png', 10, 10, True)
+        self.rect = self.image.get_rect()
+
+        self.rect.centery = random.randint(HEIGHT/3, HEIGHT/1.2)
+        self.rect.centerx = random.randint(WIDTH/20, WIDTH/2.5)
+
+    def update(self):
+        if contador < 100:
+            self.rect.centerx +=3
+            self.contador += 1
+        elif self.contador >= 100 and self.contador < 200:
+            self.rect.centery += 3
+            self.contador += 1
+        elif self.contador >= 200 and self.contador < 300:
+            self.rect.centerx -= 3
+            self.contador +=1
+        elif self.contador >=300 and self.contador < 400:
+            self.rect.centery -=3
+            self.contador +=1
+        else:
+            self.contador = 0
+
+        #------------------------------------------------------------
+
+        if self.rect.top > function.HEIGHT-function.WIDTH*(1/6.3):
+            self.rect.bottom = function.WIDTH*(1/6.6)       
+
+        elif self.rect.bottom < function.WIDTH*(1/6.6):
+            self.rect.top = function.HEIGHT-function.WIDTH*(1/6.3)
+
+        elif self.rect.right > WIDTH/3.5:
+            self.rect.left = function.WIDTH*(1/60)
+
+        elif self.rect.left < function.WIDTH*(1/60):
+            self.rect.right = function.WIDTH
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)

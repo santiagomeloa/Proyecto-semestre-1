@@ -1,5 +1,4 @@
-import subprocess, pygame, platform, ctypes, sys, random, time
-import sprites
+import subprocess, pygame, platform, ctypes, sys, random
 from pygame.locals import *
 
 #------------colors-------------
@@ -10,11 +9,11 @@ DARK_BLUE = (16, 19, 115)
 DARK_PURPLE = (101, 5, 135)
 RED = (255, 3, 0)
 MARRON = (109, 4, 4)
-list_colors = [YELLOW, GREEN, BLUE, DARK_BLUE, DARK_PURPLE, RED, MARRON]
+colors_list = [YELLOW, GREEN, BLUE, DARK_BLUE, DARK_PURPLE, RED, MARRON]
 
 #-------------functional variables---------------
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
-player_hits = 0
+enemys_deleted = 0 #Variable para saber cuantos enemigos se han eliminado
 
 def music(file): # Función para activar la musica que se le pase como parametro (Solo archivos mp3)
     pygame.mixer.init()

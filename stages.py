@@ -3,30 +3,38 @@ import function, sprites
 from pygame.locals import *
 from function import funciones, WIDTH, HEIGHT
 
-def main_stage(FPS):
-    function.music('Music/backGround.mp3')
-    screen = pygame.display.set_mode((function.WIDTH, function.HEIGHT))
-    clock = pygame.time.Clock()
+def main_stage(FPS, player1, clock):
+    function.music('Music/backGround.mp3') #Activa la música de escenario
+    screen = pygame.display.set_mode((WIDTH, HEIGHT)) #Creación de la pantalla
+    bucle = True
 
     #-----------------groups-------------------
     all_sprites_group = pygame.sprite.Group()
+    words_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
 
     #-----------------sprites------------------
-    background_image = function.load_image('Images/wallBackground.png', function.WIDTH, function.HEIGHT+(function.HEIGHT*(1/5)))
-    player1 = sprites.Player((200, 500), (300, 300), 100, 100)
+    background_image = function.load_image('Images/wallBackground.png', WIDTH, HEIGHT+(HEIGHT*(1/5)))
+    fight_background = function.load_image('Images/fight 1.png', WIDTH, HEIGHT)
+    
+
     for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('Images/enemy.png',( random.randint(((1/2)*function.WIDTH*(1/60)//1), (function.WIDTH-(function.WIDTH*(1/65)//1))), random.randint((function.WIDTH*(1/6.6)//1), (function.HEIGHT-function.WIDTH*(1/6.3)//1))), (350, 350), 20, 10, random.choice(['card', 'bolt']))
-        enemy_group.add(enemy)
+        enemy = sprites.Bicho('Images/enemy.png',( random.randint(((1/2)*WIDTH*(1/60)//1), (WIDTH-(WIDTH*(1/65)//1))), random.randint((WIDTH*(1/6.6)//1), (HEIGHT-WIDTH*(1/6.3)//1))), (350, 350), 20, 10, random.choice(['card', 'bolt']))
+        enemy_group.add(enemy) # agregar enemigos al grupo "enemy_groups"
 
     # Text
-    hp = sprites.Words(f'HP {player1.hp}', 30, function.RED, (function.WIDTH/6, function.HEIGHT/20), True)
-    all_sprites_group.add(hp)
+    hp = sprites.Words(f'HP {player1.hp}', 30, function.RED, (WIDTH/6, HEIGHT/20), True)
+    words_group.add(hp)
+
+
     all_sprites_group.add(player1)
 
     pygame.mouse.set_visible(False)
 
-    while True:
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    while bucle:
         collides = None
         clock.tick(FPS)
 
@@ -34,6 +42,7 @@ def main_stage(FPS):
         screen.blit(background_image, (0, 0))
         all_sprites_group.draw(screen)
         enemy_group.draw(screen)
+        words_group.draw(screen)
 
         #----------------detecting keyboards inputs---------------
         for event in pygame.event.get():
@@ -43,32 +52,45 @@ def main_stage(FPS):
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     sys.exit(0)
-        
+
+        #----------------updating sprites on screen-----------------
         all_sprites_group.update()
-        enemy_group.update()
+        enemy_group.update()    
+        words_group.update()
+        hp.text = f'HP {player1.hp}'
 
         #--------------------Examinando coliciones------------------
         collides = pygame.sprite.spritecollide(player1, enemy_group, False,)
+
         if collides:
             player1.collide()
+            player1.update()
+            pygame.display.flip()
+            time.sleep(1)
+            screen.blit(fight_background, (0, 0)) #Coloca el fondo de batalla
+            pygame.display.flip()
+
             for collide in collides:
                 result = battle(player1, collide, screen, clock)
-                time.sleep(1)
                 if result == 'win!':
                     collide.kill()
             collides.clear()
-            
-        if function.player_hits == 5:
-            pass
+        
+        if function.enemys_deleted == 5:
+            bucle = False
         
         pygame.display.flip() #Actualizar contenido en pantalla
     return 'game over'
 
+
 def equation(screen, clock, player):
-    function.music('Music/equation.mp3')
+    function.music('Music/equation.mp3') #Activa la música de escenario
     FPS = 60
     tup = funciones[random.randint(0, len(funciones)-1)]
     true_result = tup[1]
+    bucle = True
+    player_answer = ''
+    ok = False
 
     #----------groups--------------
     words_group = pygame.sprite.Group()
@@ -76,18 +98,22 @@ def equation(screen, clock, player):
     stars_group = pygame.sprite.Group()
     
     #---------------------sprites-----------------------
+    #Backgrounds
+    win_background = function.load_image('Images/Correcto!.png', WIDTH, HEIGHT)
+    lose_background = function.load_image('Images/Error.png', WIDTH, HEIGHT)
+    #Background stars
     for n in range(100):
         star = sprites.Stars()
         stars_group.add(star)
     
     # Buttons
-    for number in range(0, 13):
+    for number in range(0, 14):
         positions = (
             (2.6, 2), (2, 2), (1.6, 2), 
             (2.6, 1.7), (2, 1.7), (1.6, 1.7), 
             (2.6, 1.49), (2, 1.49), (1.6, 1.49), 
             (2.6, 1.32), (2, 1.32), (1.6, 1.32),
-            (1.2, 1.6)
+            (1.2, 1.6), (2, 1.18)
             )
         position = positions[number]
 
@@ -107,18 +133,23 @@ def equation(screen, clock, player):
             ok_button = sprites.Buttons('ok', (WIDTH/position[0], HEIGHT/position[1]))
             buttons_group.add(ok_button)
 
+        elif number == 13:
+            ok_button = sprites.Buttons('delete', (WIDTH/position[0], HEIGHT/position[1]))
+            buttons_group.add(ok_button)
+
     # Text
     ecuacion = sprites.Words(tup[0],70, function.RED,(WIDTH/2, HEIGHT/6))
     solution = sprites.Words(f'{true_result}', 70, function.RED, (WIDTH/2, HEIGHT/4))
-    words_group.add(ecuacion)
+    text_in_screen = sprites.Words(player_answer, 100, function.RED, (WIDTH/8, HEIGHT/3))
+    words_group.add(ecuacion, text_in_screen)
    
 
     pygame.mouse.set_visible(True)
     pygame.event.set_grab(True)
 
-    player_answer = ''
-    bucle = True
-
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
     while bucle:
         clock.tick(FPS)
 
@@ -152,27 +183,41 @@ def equation(screen, clock, player):
 
                         elif button.type_button == 'split':
                             player_answer += '/'
+
+                        elif button.type_button == 'delete':
+                            player_answer = player_answer[:-1]
                         
                         elif button.type_button == 'ok':
-                            solution.draw(screen)
-                            if true_result == player_answer:
-                                player.luck += 1
-                                function.player_hits += 1
-                            else:
-                                player.hp -= 3
-                                player.luck -= 1
-                            solution.update()
-                            time.sleep(1)
-                            bucle = False
+                            ok = True
 
         #-------------------update sprites on screen--------------
         stars_group.update()
         buttons_group.update()
+        words_group.update()
+        text_in_screen.text = f'Tu respuesta: {player_answer}'
+
+        if ok:
+            solution.draw(screen)
+            solution.update()
+            time.sleep(1)
+            if true_result == player_answer:
+                player.luck += 1
+                function.enemys_deleted += 1
+                screen.blit(win_background, (0, 0))
+                pygame.display.flip()
+                time.sleep(1)
+            else:
+                player.hp -= 3
+                player.luck -= 1
+                screen.blit(lose_background, (0, 0))
+                pygame.display.flip()
+                time.sleep(1)
+            bucle = False
 
         pygame.display.flip() #Actualizar contenido en pantalla
 
+
 def battle(player, enemy, screen, clock):
-    global player_result
     FPS = 60
     turn_attack = 'player'
     function.music('Music/battle.mp3') #llama a la función que activa la musica
@@ -213,7 +258,9 @@ def battle(player, enemy, screen, clock):
     pygame.mouse.set_visible(True) #Pone el mouse visible
     pygame.event.set_grab(True) #Bloquea el mouse para que no se salga de la pantalla
 
-
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
     while player.hp > 0 or enemy.hp > 0: # Bucle principal
         clock.tick(FPS)
 
@@ -297,3 +344,86 @@ def battle(player, enemy, screen, clock):
     function.music('Music/backGround.mp3')
     return 'win!'
 
+
+def end_battle(FPS, player1, clock):
+    function.music('Music/intro.mp3') #Activa la música de escenario
+    screen = pygame.display.set_mode((WIDTH, HEIGHT)) #Creación de la pantalla
+
+    #-----------------groups-------------------
+    all_sprites_group = pygame.sprite.Group()
+    words_group = pygame.sprite.Group()
+    enemy_group = pygame.sprite.Group()
+    stars_group = pygame.sprite.Group()
+
+    #-----------------sprites------------------
+    background_image = function.load_image('Images/BackgroundEnd.png', WIDTH, HEIGHT+(HEIGHT*(1/5)), True)
+    fight_background = function.load_image('Images/fondo_poker.png', WIDTH, HEIGHT)
+    #stars
+    for n in range(100):
+        star = sprites.Stars()
+        stars_group.add(star)
+
+    #enemy
+    boss = sprites.Boss()
+    enemy_group.add(boss) # agregar enemigos al grupo "enemy_groups"
+
+    # Text
+    hp = sprites.Words(f'HP {player1.hp}', 30, function.RED, (WIDTH/6, HEIGHT/20), True)
+    words_group.add(hp)
+
+
+    all_sprites_group.add(player1)
+
+    pygame.mouse.set_visible(False)
+
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    while True:
+        collides = None
+        clock.tick(FPS)
+
+        #----------------drawing sprites on screen----------------
+        
+        screen.fill(function.colors_list[random.randint(2, len(function.colors_list)-3)])
+        stars_group.draw(screen)
+        screen.blit(background_image, (0, 0))
+        all_sprites_group.draw(screen)
+        enemy_group.draw(screen)
+        words_group.draw(screen)
+
+        #----------------detecting keyboards inputs---------------
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+
+        #----------------updating sprites on screen-----------------
+        all_sprites_group.update()
+        enemy_group.update()    
+        words_group.update()
+        stars_group.update()
+        hp.text = f'HP {player1.hp}'
+
+        #--------------------Examinando coliciones------------------
+        collides = pygame.sprite.spritecollide(player1, enemy_group, False,)
+
+        if collides:
+            player1.collide()
+            player1.update()
+            pygame.display.flip()
+            time.sleep(1)
+            screen.blit(fight_background, (0, 0)) #Coloca el fondo de batalla
+            pygame.display.flip()
+
+            for collide in collides:
+                result = battle(player1, collide, screen, clock)
+                if result == 'win!':
+                    collide.kill()
+            collides.clear()
+        
+        pygame.display.flip() #Actualizar contenido en pantalla
+    return 'game over'
