@@ -209,6 +209,7 @@ def equation(screen, clock, player):
             else:
                 player.hp -= 3
                 player.luck -= 1
+                function.enemys_deleted += 1
                 screen.blit(lose_background, (0, 0))
                 pygame.display.flip()
                 time.sleep(1)
