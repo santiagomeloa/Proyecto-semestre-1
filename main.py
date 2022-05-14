@@ -54,7 +54,6 @@ def main():
             if play_button.rect.collidepoint(pygame.mouse.get_pos()):
                 if event.type == MOUSEBUTTONDOWN and event.button == 1 and function.enemys_deleted != 5:
                     stages.end_battle(FPS, player1, clock)
-                    
 
         #--------------update sprites on screen---------------
         play_button.update()

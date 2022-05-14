@@ -515,17 +515,17 @@ class Stars(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 class Boss(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, centerx, centery, area):
         super().__init__()
         self.hp = 50
         self.image = function.load_image('Images/FinalBoss.png', WIDTH/5, HEIGHT/5,True)
         self.rect = self.image.get_rect()
         self.frame = 0
         
-        self.rect.centerx = WIDTH/2
-        self.rect.centery = HEIGHT/2
-        self._area = (450,300)
-        
+        self.rect.centerx = centerx
+        self.rect.centery = centery
+        self._area = area
+        self.location = (self.rect.centerx , self.rect.centery )
          #----------------------frames------------------------
         self.frame = 0
         self.sheet = function.load_image('Images/FinalBoss.png', self._area[0], self._area[1], True)
@@ -550,6 +550,7 @@ class Boss(pygame.sprite.Sprite):
     
     def update(self):
         self.animation()
+        self.location=(self.rect.centerx , self.rect.centery )
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)

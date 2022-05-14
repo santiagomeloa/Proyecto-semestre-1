@@ -345,6 +345,133 @@ def battle(player, enemy, screen, clock):
     function.enemys_deleted += 1
     return 'win!'
 
+def Final_battle(player, enemy, screen, clock):
+    FPS = 60
+    turn_attack = 'player'
+    function.music('Music/battle.mp3') #llama a la función que activa la musica
+    
+    #----------groups--------------
+    all_sprites_group = pygame.sprite.Group()
+    words_group = pygame.sprite.Group()
+    buttons_group = pygame.sprite.Group()
+    stars_group = pygame.sprite.Group()
+    
+    #---------------------sprites-----------------------
+    player_example = sprites.Player((WIDTH/6, HEIGHT/3), (900, 900), 3, 100)
+    for n in range(100):
+        star = sprites.Stars()
+        stars_group.add(star)
+    #images
+    background_image = function.load_image('Images/battle_stage.png', WIDTH, HEIGHT,True)
+    hit = function.load_image('Images/golpe.png', 200, 80, True)
+    enemy.rect.centerx = WIDTH-(WIDTH/5)
+    enemy.rect.centery = HEIGHT/3.5
+    enemy._area = (2000, 2000)
+
+    # Buttons
+    button_attack = sprites.Buttons('attack', (WIDTH/4, HEIGHT-HEIGHT/6))
+    button_spell = sprites.Buttons('spell', (WIDTH/2, HEIGHT-HEIGHT/6))
+    button_luck = sprites.Buttons('luck', (WIDTH-WIDTH/4, HEIGHT-HEIGHT/6))
+
+    # Text
+    hp_player = sprites.Words(f'Tu vida {player.hp}', 40, function.RED, (WIDTH/6, HEIGHT/20))
+    hp_enemy = sprites.Words(f'Vida del rival {enemy.hp}', 40, function.RED, (WIDTH/1.3, HEIGHT/20))
+    potions = sprites.Words(f'Pociones disponibles: {player._potions}', 20, function.RED, (WIDTH/2, HEIGHT-HEIGHT/9))
+    mana = sprites.Words(f'Mana: {player._mana}', 20, function.BLUE, (WIDTH-WIDTH/4, HEIGHT-HEIGHT/9))
+    
+    #adding to groups
+    buttons_group.add(button_attack, button_spell, button_luck)
+    words_group.add(hp_enemy, hp_player, potions, mana)
+    all_sprites_group.add(player_example, enemy)
+
+    pygame.mouse.set_visible(True) #Pone el mouse visible
+    pygame.event.set_grab(True) #Bloquea el mouse para que no se salga de la pantalla
+
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    while player.hp > 0 or enemy.hp > 0: # Bucle principal
+        clock.tick(FPS)
+
+        #------------drawing sprites on screen------------
+        screen.fill(function.DARK_BLUE)
+        stars_group.draw(screen)
+        screen.blit(background_image, (0, 0))
+
+        buttons_group.draw(screen)
+        words_group.draw(screen)
+        all_sprites_group.draw(screen)
+
+        #------------------------input events-------------------------
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+
+            #-----battle-----
+            if button_attack.rect.collidepoint(pygame.mouse.get_pos()):
+                if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                   if player.luck==5:
+                       enemy.hp-=30
+                   else:
+                       player.hp-=20
+                       
+
+            elif button_spell.rect.collidepoint(pygame.mouse.get_pos()):
+                if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                    if player._potions>0 and player._hp<100:
+                        function.use_potion(player)
+                        turn_attack = 'enemy'
+                        pygame.mouse.set_visible(False)
+                        player._mana+=5
+
+            elif button_luck.rect.collidepoint(pygame.mouse.get_pos()):
+                if event.type == MOUSEBUTTONDOWN and event.button == 1 and player._mana>=30:
+                    function.SpecialDamage(player,enemy)
+                    turn_attack = 'enemy'
+                    pygame.mouse.set_visible(False)
+
+
+        #-------------update sprites on screen--------------
+        hp_player.text = f'Tu vida: {player.hp}'
+        hp_enemy.text = f'Vida del rival: {enemy.hp}'
+        if player._potions > 0: 
+            potions.text = f"Pociones disponibles: {player._potions}"
+        else:
+            potions.text=f'No se puede curar'
+
+        if (player._mana-30) >= 0: 
+            mana.text = f'Mana: {player._mana}'
+        else:
+            mana.text = f'Sin mana suficiente'
+        
+        player_example.animation('right')
+        enemy.animation()
+        buttons_group.update()
+        words_group.update()
+        stars_group.update()
+
+        if enemy.hp <= 0:
+            break
+
+        if turn_attack == 'enemy': #Ataque del enemigo
+            enemy.damage = random.randint(100, 600)*(1/100)
+            player.hp -= enemy.damage
+            turn_attack = 'player'
+            pygame.mouse.set_visible(True)
+            
+        if player.hp <= 0:
+            dead(FPS, clock)
+        
+        pygame.display.flip() #Actualizar contenido en pantalla
+
+    equation(screen, clock, player)
+    function.music('Music/backGround.mp3')
+    function.enemys_deleted += 1
+    return 'win!'
 
 def end_battle(FPS, player1, clock):
     function.music('Music/intro.mp3') #Activa la música de escenario
@@ -371,7 +498,7 @@ def end_battle(FPS, player1, clock):
         points_group.add(points)
 
     #enemy
-    boss = sprites.Boss()
+    boss = sprites.Boss(WIDTH/2, HEIGHT/2,(450,300))
     enemy_group.add(boss) # agregar enemigos al grupo "enemy_groups"
 
     # Text
@@ -429,7 +556,7 @@ def end_battle(FPS, player1, clock):
             pygame.display.flip()
 
             for collide in collides:
-                result = battle(player1, collide, screen, clock)
+                result = Final_battle(player1, collide, screen, clock)
                 if result == 'win!':
                     collide.kill()
             collides.clear()
