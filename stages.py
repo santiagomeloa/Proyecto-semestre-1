@@ -417,8 +417,13 @@ def Final_battle(player, enemy, screen, clock):
                 if event.type == MOUSEBUTTONDOWN and event.button == 1:
                    if player.luck==5:
                        enemy.hp-=30
-                   else:
+                   elif player.luck==0:
                        player.hp-=20
+                   else:
+                        function.damage(player, enemy)
+                        turn_attack = 'enemy'
+                        pygame.mouse.set_visible(False)
+                        player._mana+=5
                        
 
             elif button_spell.rect.collidepoint(pygame.mouse.get_pos()):
