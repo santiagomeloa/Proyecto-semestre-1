@@ -345,6 +345,7 @@ def battle(player, enemy, screen, clock):
     function.enemys_deleted += 1
     return 'win!'
 
+
 def Final_battle(player, enemy, screen, clock):
     FPS = 60
     turn_attack = 'player'
@@ -473,6 +474,7 @@ def Final_battle(player, enemy, screen, clock):
     function.enemys_deleted += 1
     return 'win!'
 
+
 def end_battle(FPS, player1, clock):
     function.music('Music/intro.mp3') #Activa la música de escenario
     screen = pygame.display.set_mode((WIDTH, HEIGHT)) #Creación de la pantalla
@@ -566,7 +568,7 @@ def end_battle(FPS, player1, clock):
 
 
 def dead(FPS, clock):
-    function.music('Music/backGround.mp3') #Activa la música de escenario
+    function.music('Music/game_over_song.mp3') #Activa la música de escenario
     bucle = True
     screen = pygame.display.set_mode((WIDTH, HEIGHT)) #Creación de la pantalla
 
