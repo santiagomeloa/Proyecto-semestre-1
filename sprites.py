@@ -514,6 +514,7 @@ class Stars(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
+
 class Boss(pygame.sprite.Sprite):
     def __init__(self, centerx, centery, area):
         super().__init__()
@@ -554,6 +555,7 @@ class Boss(pygame.sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
 
 class Points(pygame.sprite.Sprite):
     def __init__(self):
