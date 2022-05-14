@@ -321,8 +321,8 @@ class Bicho(pygame.sprite.Sprite):
 class Words(pygame.sprite.Sprite, pygame.font.Font):
     def __init__(self, text: str, size: int, color, location, multicolor=False):
         super().__init__()
-
-        self.font = pygame.font.Font('texto/04B_30__.ttf', size)
+        
+        self.font = pygame.font.Font('texto/04B_30__.TTF', size)
         self._text = text
         self._color = color
         self.multicolor = multicolor
@@ -495,7 +495,7 @@ class Buttons(pygame.sprite.Sprite):
 class Stars(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = function.load_image('images/star.png', 30, 30, True)
+        self.image = function.load_image('Images/star.png', 30, 30, True)
         self.rect = self.image.get_rect()
 
         self.rect.centery = random.randint(0, function.HEIGHT)
@@ -533,39 +533,26 @@ class Boss(pygame.sprite.Sprite):
 
 class Points(pygame.sprite.Sprite):
     def __init__(self):
-        self.contador = 0
         super().__init__()
-        self.image = function.load_image('images/star.png', 10, 10, True)
+        self.image = function.load_image('Images/star.png', 10, 10, True)
         self.rect = self.image.get_rect()
 
         self.rect.centery = random.randint(HEIGHT/3, HEIGHT/1.2)
-        self.rect.centerx = random.randint(WIDTH/20, WIDTH/2.5)
+        self.rect.centerx = random.randint(int(WIDTH/20), int(WIDTH/2.5))
 
     def update(self):
-        if contador < 100:
-            self.rect.centerx +=3
-            self.contador += 1
-        elif self.contador >= 100 and self.contador < 200:
-            self.rect.centery += 3
-            self.contador += 1
-        elif self.contador >= 200 and self.contador < 300:
-            self.rect.centerx -= 3
-            self.contador +=1
-        elif self.contador >=300 and self.contador < 400:
-            self.rect.centery -=3
-            self.contador +=1
-        else:
-            self.contador = 0
-
+        self.rect.centerx += 2
+        self.rect.centery += 2
+        self.rect.center
+    
         #------------------------------------------------------------
-
         if self.rect.top > function.HEIGHT-function.WIDTH*(1/6.3):
             self.rect.bottom = function.WIDTH*(1/6.6)       
 
         elif self.rect.bottom < function.WIDTH*(1/6.6):
             self.rect.top = function.HEIGHT-function.WIDTH*(1/6.3)
 
-        elif self.rect.right > WIDTH/3.5:
+        elif self.rect.right > WIDTH/2.5:
             self.rect.left = function.WIDTH*(1/60)
 
         elif self.rect.left < function.WIDTH*(1/60):

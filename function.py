@@ -2,6 +2,7 @@ import subprocess, pygame, platform, ctypes, sys, random
 from pygame.locals import *
 
 #------------colors-------------
+WHITE = (255, 255, 255)
 YELLOW = (249, 255, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
@@ -9,10 +10,12 @@ DARK_BLUE = (16, 19, 115)
 DARK_PURPLE = (101, 5, 135)
 RED = (255, 3, 0)
 MARRON = (109, 4, 4)
-colors_list = [YELLOW, GREEN, BLUE, DARK_BLUE, DARK_PURPLE, RED, MARRON]
+BLACK = (0, 0, 0)
+colors_list = [YELLOW, GREEN, BLUE, DARK_BLUE, DARK_PURPLE, RED, MARRON, BLACK]
 
 #-------------functional variables---------------
 sistema = platform.system() #Obtiene el sistema operativo del pc desde donde se esté ejecutando
+
 enemys_deleted = 0 #Variable para saber cuantos enemigos se han eliminado
 
 def music(file): # Función para activar la musica que se le pase como parametro (Solo archivos mp3)

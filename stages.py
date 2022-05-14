@@ -75,7 +75,8 @@ def main_stage(FPS, player1, clock):
                 if result == 'win!':
                     collide.kill()
             collides.clear()
-        
+
+        print(function.enemys_deleted)
         if function.enemys_deleted == 5:
             bucle = False
         
@@ -202,7 +203,6 @@ def equation(screen, clock, player):
             time.sleep(1)
             if true_result == player_answer:
                 player.luck += 1
-                function.enemys_deleted += 1
                 screen.blit(win_background, (0, 0))
                 pygame.display.flip()
                 time.sleep(1)
@@ -333,15 +333,15 @@ def battle(player, enemy, screen, clock):
             player.hp -= enemy.damage
             turn_attack = 'player'
             pygame.mouse.set_visible(True)
-            #del hit
             
         if player.hp <= 0:
-            break
+            dead(FPS, clock)
         
         pygame.display.flip() #Actualizar contenido en pantalla
 
     equation(screen, clock, player)
     function.music('Music/backGround.mp3')
+    function.enemys_deleted += 1
     return 'win!'
 
 
@@ -354,6 +354,7 @@ def end_battle(FPS, player1, clock):
     words_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
     stars_group = pygame.sprite.Group()
+    points_group = pygame.sprite.Group()
 
     #-----------------sprites------------------
     background_image = function.load_image('Images/BackgroundEnd.png', WIDTH, HEIGHT+(HEIGHT*(1/5)), True)
@@ -362,6 +363,11 @@ def end_battle(FPS, player1, clock):
     for n in range(100):
         star = sprites.Stars()
         stars_group.add(star)
+
+    #points
+    for n in range(1000):
+        points = sprites.Points()
+        points_group.add(points)
 
     #enemy
     boss = sprites.Boss()
@@ -387,6 +393,7 @@ def end_battle(FPS, player1, clock):
         
         screen.fill(function.colors_list[random.randint(2, len(function.colors_list)-3)])
         stars_group.draw(screen)
+        points_group.draw(screen)
         screen.blit(background_image, (0, 0))
         all_sprites_group.draw(screen)
         enemy_group.draw(screen)
@@ -403,6 +410,7 @@ def end_battle(FPS, player1, clock):
 
         #----------------updating sprites on screen-----------------
         all_sprites_group.update()
+        points_group.update()
         enemy_group.update()    
         words_group.update()
         stars_group.update()
@@ -424,6 +432,51 @@ def end_battle(FPS, player1, clock):
                 if result == 'win!':
                     collide.kill()
             collides.clear()
+        
+        pygame.display.flip() #Actualizar contenido en pantalla
+    return 'game over'
+
+
+def dead(FPS, clock):
+    function.music('Music/backGround.mp3') #Activa la música de escenario
+    bucle = True
+    screen = pygame.display.set_mode((WIDTH, HEIGHT)) #Creación de la pantalla
+
+    #-----------------groups-------------------
+    words_group = pygame.sprite.Group()
+
+    #-----------------sprites------------------
+    game_over_img = function.load_image('Images/Game over.png', 200, 200, True)
+
+    # Text
+    end_messenge = sprites.Words('Haz perdido :(', 50, function.WHITE, (WIDTH/2, HEIGHT/1.5))
+    words_group.add(end_messenge)
+
+    pygame.mouse.set_visible(False)
+
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    while bucle:
+        clock.tick(FPS)
+
+        #----------------drawing sprites on screen----------------
+        screen.fill(function.BLACK)
+        words_group.draw(screen)
+        screen.blit(game_over_img, (WIDTH/2, HEIGHT/2))
+
+        #----------------detecting keyboards inputs---------------
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit(0)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+
+        #----------------updating sprites on screen----------------- 
+        words_group.update()
+
         
         pygame.display.flip() #Actualizar contenido en pantalla
     return 'game over'
