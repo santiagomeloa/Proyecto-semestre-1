@@ -517,7 +517,7 @@ class Stars(pygame.sprite.Sprite):
 class Boss(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self._hp = 50
+        self.hp = 50
         self.image = function.load_image('Images/star.png', WIDTH/20, HEIGHT/20)
         self.rect = self.image.get_rect()
 
