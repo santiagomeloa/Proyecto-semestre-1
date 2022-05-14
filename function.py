@@ -80,7 +80,7 @@ def damage(player, enemy):
     enemy.hp -= player.attack
 
 def SpecialDamage(player,enemy):
-        player.attack = random.randint(90,160)/player.luck
+        player.attack = random.randint(1,6)*10/player.luck
         enemy.hp -= player.attack
         player.mana -= 30
     

@@ -21,7 +21,7 @@ def main():
     play_button = sprites.Buttons('play', (WIDTH/2, HEIGHT/2))
 
     #Player
-    player1 = sprites.Player((200, 500), (300, 300), 50, 100)
+    player1 = sprites.Player((200, 500), (300, 300), 50, 10)
 
     background_image = function.load_image(
         'Images/menu_screen.jpeg', WIDTH, HEIGHT
