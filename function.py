@@ -76,11 +76,14 @@ def load_image(filename, width=None, height=None, transparent=False): #covierte 
 
 
 def damage(player, enemy):
-    player.attack = random.randint(100, 600)*(1/player.luck)
+    player.attack = random.randint(1, 6)+(0.5*player.luck)
     enemy.hp -= player.attack
 
 def SpecialDamage(player,enemy):
-        player.attack = random.randint(1,6)*10/player.luck
+    if player.luck<=0:
+        pass
+    else:
+        player.attack = random.randint(1,6)*(0.5 + player.luck)
         enemy.hp -= player.attack
         player.mana -= 30
     

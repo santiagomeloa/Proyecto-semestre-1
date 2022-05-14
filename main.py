@@ -1,3 +1,8 @@
+'''
+Modulo principal:
+Llama a las diferentes funciones que generan escenarios y los objetos. 
+Se utiliza el bucle del juego para realizar todas las cosas.
+'''
 import pygame, sys
 from pygame.locals import *
 import function, sprites, stages
@@ -21,7 +26,7 @@ def main():
     play_button = sprites.Buttons('play', (WIDTH/2, HEIGHT/2))
 
     #Player
-    player1 = sprites.Player((200, 500), (300, 300), 50, 10)
+    player1 = sprites.Player((300, 500), (300, 300), 50, 2)
 
     background_image = function.load_image(
         'Images/menu_screen.jpeg', WIDTH, HEIGHT
@@ -59,7 +64,8 @@ def main():
         play_button.update()
 
         if function.enemys_deleted == 5:
-            stages.end_battle(FPS, player1, clock)
+            stages.transicion(FPS, player1, clock)
+        
 
         pygame.display.flip() #Actualizar contenido en pantalla
 

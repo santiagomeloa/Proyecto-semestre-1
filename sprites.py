@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
 
         self._hp = hp
         self._luck = luck
-        self._attack = random.randint(100, 600)*(1/self._luck)
+        self._attack = random.randint(1, 6)
         self._potions = 4
         self._mana = 100
 
@@ -519,7 +519,7 @@ class Boss(pygame.sprite.Sprite):
     def __init__(self, centerx, centery, area):
         super().__init__()
         self.hp = 50
-        self.image = function.load_image('Images/FinalBoss.png', WIDTH/5, HEIGHT/5,True)
+        self.image = function.load_image('Images/FinalBoss.png', WIDTH/20, HEIGHT/20,True)
         self.rect = self.image.get_rect()
         self.frame = 0
         
@@ -538,7 +538,6 @@ class Boss(pygame.sprite.Sprite):
                 16:(self.sheet.get_width()/40.11111, self.sheet.get_height()/1.7, self.sheet.get_width()/4, self.sheet.get_height()/2),
                 8:(self.sheet.get_width()/1.63, self.sheet.get_height()/2, self.sheet.get_width()/4, self.sheet.get_height()/2),
                 24:(self.sheet.get_width()/1.63, self.sheet.get_height()/50, self.sheet.get_width()/4, self.sheet.get_height()/2)
-            
             }
     
     def animation(self):
