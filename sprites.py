@@ -518,15 +518,38 @@ class Boss(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.hp = 50
-        self.image = function.load_image('Images/star.png', WIDTH/20, HEIGHT/20)
+        self.image = function.load_image('Images/FinalBoss.png', WIDTH/5, HEIGHT/5,True)
         self.rect = self.image.get_rect()
-
+        self.frame = 0
+        
         self.rect.centerx = WIDTH/2
         self.rect.centery = HEIGHT/2
-
+        self._area = (450,300)
+        
+         #----------------------frames------------------------
+        self.frame = 0
+        self.sheet = function.load_image('Images/FinalBoss.png', self._area[0], self._area[1], True)
+        
+        self.sheet.set_clip(pygame.Rect(self.sheet.get_width()/10, self.sheet.get_height()/10, self.sheet.get_width()/10, self.sheet.get_height()/10))
+    
+        self.Boss_Sprites = {
+                0:(self.sheet.get_width()/50, self.sheet.get_height()/50, self.sheet.get_width()/4, self.sheet.get_height()/2),
+                16:(self.sheet.get_width()/40.11111, self.sheet.get_height()/1.7, self.sheet.get_width()/4, self.sheet.get_height()/2),
+                8:(self.sheet.get_width()/1.63, self.sheet.get_height()/2, self.sheet.get_width()/4, self.sheet.get_height()/2),
+                24:(self.sheet.get_width()/1.63, self.sheet.get_height()/50, self.sheet.get_width()/4, self.sheet.get_height()/2)
+            
+            }
+    
+    def animation(self):
+        self.frame+=1
+        if self.frame > 32:
+            self.frame = 0
+        if  self.frame == 24 or self.frame == 0 or self.frame == 8 or self.frame == 16: 
+            self.sheet.set_clip(pygame.Rect(self.Boss_Sprites[self.frame]))
+            self.image = self.sheet.subsurface(self.sheet.get_clip())
     
     def update(self):
-        pass
+        self.animation()
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
