@@ -62,24 +62,28 @@ WIDTH = screen_size()[0]
 HEIGHT = screen_size()[1]
 
 
-def load_image(filename, width=None, height=None, transparent=False): #covierte las imagenes, les da las dimenciones deceadas y les quita el fondo
+def load_image(filename, width=None, height=None, transparent=False):   #covierte las imagenes a el formato aceptado por pygame y le da las dimenciones deceadas,
+                                                                        #ademas de poder quitar el fondo
     try: imagen = pygame.image.load(filename)
     except pygame.error:
         raise SystemExit
-    if width != None or height != None:
+
+    if width != None or height != None:     #Si width o height son diferentes de "None", redefine el tamaño de la imagen por estos parametros
         imagen = pygame.transform.scale(imagen, (width, height))
     imagen = imagen.convert()
-    if transparent:
+
+    if transparent:     #Si transparent es igaul a True, entonces se le quita el fondo a la imagen
         color = pygame.PixelArray(imagen)
         imagen.set_colorkey(color[0, 0], RLEACCEL)
+
     return imagen
 
 
-def damage(player, enemy):
-    player.attack = random.randint(1, 6)+(0.5*player.luck)
-    enemy.hp -= player.attack
+def damage(player, enemy):   #calcula el daño hecho al enemigo por el jugador
+    player.attack = random.randint(1, 6)+(0.5*player.luck)  #Define el daño del personaje principal
+    enemy.hp -= player.attack   #Le resta a la vida del enemigo la cantidad de daño establecida para el personje principal
 
-def SpecialDamage(player,enemy):
+def SpecialDamage(player,enemy): #realiza un ataque especial que hace mas daño al enemigo dependiendo de los aciertos en las respuestas
     if player.luck<=0:
         pass
     else:
@@ -87,7 +91,8 @@ def SpecialDamage(player,enemy):
         enemy.hp -= player.attack
         player.mana -= 30
     
-def use_potion(player):
+def use_potion(player): #aumenta la vida del jugador y disminuye el contador de pociones
+    
     if player.hp<100 and player.hp>=80 and player._potions>0:
         player.hp=100
         player._potions-=1
@@ -95,6 +100,6 @@ def use_potion(player):
         player.hp+=20
         player._potions-=1
 
-def movement():
+def movement(): #determina el movimiento de los enemigos
     point=random.randint(-50, 50)
     return point

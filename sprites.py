@@ -1,3 +1,22 @@
+'''
+Existen sprites que tienen animación, y para ello se tiene una imagen donde está cada movimiento que requiere el 
+sprite para la cierta animación. Para esto se definen "sheets" en cada sprite para obtener los frames
+presentes en la animación.
+
+El atributo Rect funciona para colocar las coordenadas donde se ubica el sprite.
+
+En los sprites con animacion es necesario actualizar las imagenes al cabo de cierto tiempo, esto se logra
+con la funcion update. 
+
+Para mostrar los objetos por pantalla se realiza la funcion draw.
+
+En la clase bicho se determina por medio de un random la apariencia del enemigo y dependiendo de su apariencia
+se modifican las funciones de update, sheet y movement.
+
+Las clases Stars y Points funcionan muy parecido, sirven como decoradores de algunos escenarios, simplemente 
+hacen una lluvia de estrellas en el fondo del escenario.
+'''
+
 import pygame, random, time, asyncio
 import function
 from pygame.locals import *

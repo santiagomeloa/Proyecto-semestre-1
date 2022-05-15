@@ -19,7 +19,7 @@ def main():
     pygame.display.set_caption('Bad dice')
 
     #-----------------groups-------------------
-    buttons_group = pygame.sprite.Group()
+    buttons_group = pygame.sprite.Group()   #Grupo para almacenar los sprites de tipo "Buttons"
 
     #-----------------sprites------------------
     #buttons
