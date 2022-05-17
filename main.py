@@ -1,56 +1,77 @@
-import pygame
-import sys, os
+'''
+Modulo principal:
+Llama a las diferentes funciones que generan escenarios y los objetos. 
+Se utiliza el bucle del juego para realizar todas las cosas.
+'''
+import pygame, sys
 from pygame.locals import *
-import funtions, sprites
+import function, sprites, stages
 
+from function import WIDTH, HEIGHT
 
 FPS = 60
 
 def main():
-    screen = pygame.display.set_mode((sprites.WIDTH, sprites.HEIGHT))
+    function.music('Music/intro.mp3') #Activa la música de escenario
+    
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
-    pygame.display.set_caption('Prueba de juego')
-    background_image = funtions.load_image('images/wallBackground.jpg', sprites.WIDTH, sprites.HEIGHT)
+    pygame.display.set_caption('Bad dice')
 
-    all_sprites_group = pygame.sprite.Group()
-    enemy_group = pygame.sprite.Group()
-
-    player1 = sprites.Player('images/main_character.png', (100, 100), 3, 100, 100)
+    #-----------------groups-------------------
+    buttons_group = pygame.sprite.Group()   #Grupo para almacenar los sprites de tipo "Buttons"
 
 
+    #-----------------sprites------------------
+    #buttons
+    play_button = sprites.Buttons('play', (WIDTH/2, HEIGHT/2))
 
-    for n in range(5): #Cración de enemigos
-        enemy = sprites.Bicho('images/enemy.png', (50,50), 20, 10)
-        enemy_group.add(enemy)
 
+    #Player
+    player1 = sprites.Player((300, 500), (300, 300), 50, 2)
 
+    background_image = function.load_image(
+        'Images/menu_screen.jpeg', WIDTH, HEIGHT
+        )
+
+    # Text
+   
+    #adding sprites to groups
+    buttons_group.add(play_button)
+
+    pygame.mouse.set_visible(True)
+
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------------------------------------
     while True:
         clock.tick(FPS)
-        keys = pygame.key.get_pressed()
+        #-------------drawing sprites on screen--------------
+        screen.blit(background_image, (0, 0))
+        play_button.draw(screen)
 
+        #-------------detecting keyboards inputs-------------
         for event in pygame.event.get():
             if event.type == QUIT:
+                pygame.quit()
                 sys.exit(0)
-        
-        screen.blit(background_image, (0, 0))
-        funtions.move(keys, player1)
-        player1.update()
-        enemy_group.update()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit(0)
+            if play_button.rect.collidepoint(pygame.mouse.get_pos()):
+                if event.type == MOUSEBUTTONDOWN and event.button == 1 and function.enemys_deleted != 5:
+                    stages.main_stage(FPS, player1, clock)
 
-        
-        collide = pygame.sprite.spritecollide(player1, enemy_group, False)
-        if collide:
-            player1.hp -= 1
-            if player1.hp < 0:
-                player1.kill()
-        
-        player1.draw(screen)
+        #--------------update sprites on screen---------------
+        play_button.update()
 
-        enemy_group.draw(screen)
+        if function.enemys_deleted == 5:
+            stages.transicion(FPS, player1, clock)
+        
 
         pygame.display.flip() #Actualizar contenido en pantalla
-    return 'game over'
 
 if __name__ == '__main__':
     pygame.init()
     main()
+    
